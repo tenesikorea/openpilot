@@ -1108,9 +1108,14 @@ TenesiPanel::TenesiPanel(QWidget* parent) : QWidget(parent) {
                                             "조향토크를 409로 무조건 설정 GenesisDH 테스트용",
                                             "../assets/offroad/icon_shell.png"
                                             ));
-  layout->addWidget(new ParamControl("Steer_Tune",
+  layout->addWidget(new ParamControl("Steer_SRTune",
                                             "조향비율 가변",
                                             "SR값을 속도대비 가변으로 사용하기",
+                                            "../assets/offroad/icon_shell.png"
+                                            ));
+  layout->addWidget(new ParamControl("Steer_LatTune",
+                                            "토크 LatAccel 가변",
+                                            "토크 LatAccel을 가변으로 사용하기",
                                             "../assets/offroad/icon_shell.png"
                                             ));
   layout->addWidget(new ParamControl("Steer_90D",

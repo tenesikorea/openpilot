@@ -39,7 +39,7 @@ def manager_init() -> None:
 
   default_params: List[Tuple[str, Union[str, bytes]]] = [
     ("CompletedTrainingVersion", "0"),
-    ("DisengageOnAccelerator", "0"), # 해제
+    ("DisengageOnAccelerator", "1"), # 해제
     ("HasAcceptedTerms", "0"),
     ("OpenpilotEnabledToggle", "1"),
     ("IsMetric", "1"),
@@ -85,7 +85,8 @@ def manager_init() -> None:
     ("TenesiSSHLegacy", "1"), # SSH 공용키 사용 옵션
     ("SshEnabled", "1"), # SSH 공용키 사용 옵션
     ("Steer_90D", "0"),  # 90도 이상시 에러나는 경우
-    ("Steer_Tune", "1"),  # 90도 이상시 에러나는 경우
+    ("Steer_SRTune", "0"),  # 가변SR비율사용
+    ("Steer_LatTune", "0"),  # 가변 조향토크비율사용
     ("Sound_Slow", "1"),  # TAMP자동감속 음성 듣기 안든기
     ("Sound_Start", "1"),  # 펭수 시작음성 듣기 안든기
     ("Steer_409", "1"), #펭수 시작음성 듣기 안든기

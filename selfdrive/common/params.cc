@@ -225,7 +225,8 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"Zorrobyte", PERSISTENT},// 조로바이트 쪽 코드 선택
     {"Neokiibyte", PERSISTENT},// 교주 쪽 코드 선택
     {"Steer_90D", PERSISTENT},//90도 조향 옵션화
-    {"Steer_Tune", PERSISTENT},//속도대응 고정SR값 사용하기
+    {"Steer_SRTune", PERSISTENT},//속도대응 고정SR값 사용하기
+    {"Steer_LatTune", PERSISTENT},//속도대응 고정토크고향값 사용하기
     {"Sound_Slow", PERSISTENT}, // TAMP자동감속 음성 온 오프
     {"Sound_Start", PERSISTENT}, // 펭수 시작음성 듣기 안든기
     {"Steer_409", PERSISTENT}, // 제네시스 조향 토크 409 선택

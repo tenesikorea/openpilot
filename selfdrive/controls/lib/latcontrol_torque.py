@@ -32,6 +32,8 @@ FRICTION_THRESHOLD = 0.2
 def set_torque_tune(tune, MAX_LAT_ACCEL=2.5, FRICTION=0.01, steering_angle_deadzone_deg=0.0):
   tune.init('torque')
   tune.torque.useSteeringAngle = True
+  if Params().get_bool('Steer_LatTune'):
+    MAX_LAT_ACCEL = interp(CS.vEgo * 3.6, MLA_SCALE_BP, MLA_SCALE_V) * 1.0 # 속도별 Max_Lat_Accel조절
   tune.torque.kp = 1.0 / MAX_LAT_ACCEL
   tune.torque.kf = 1.0 / MAX_LAT_ACCEL
   tune.torque.ki = 0.1 / MAX_LAT_ACCEL
