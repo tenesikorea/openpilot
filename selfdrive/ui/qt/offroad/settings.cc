@@ -358,7 +358,7 @@ void SoftwarePanel::updateLabels() {
   updateBtn->setText("확인중");
   updateBtn->setEnabled(true);
   gitBranchLbl->setText(QString::fromStdString(params.get("GitBranch")));
-  gitCommitLbl->setText(QString::fromStdString(params.get("GitCommit")).left(40));
+  gitCommitLbl->setText(QString::fromStdString(params.get("GitCommit")).left(24));
   osVersionLbl->setText(QString::fromStdString(Hardware::get_os_version()).trimmed());
 }
 
