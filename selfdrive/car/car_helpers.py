@@ -180,8 +180,8 @@ def get_car(logcan, sendcan):
 
   disable_radar = Params().get_bool("DisableRadar")
 
-  selected_car = Params().get("SelectedCar")
-  if selected_car:
+  selected_car = Params().get("SelectedCar") # 강제 차량 등록
+  if selected_car: # 강제 차량 등록
     candidate = selected_car.decode("utf-8")
 
   CarInterface, CarController, CarState = interfaces[candidate]

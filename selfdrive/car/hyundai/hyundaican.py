@@ -4,26 +4,37 @@ import crcmod
 from selfdrive.car.hyundai.values import CAR, CHECKSUM, FEATURES, EV_HYBRID_CAR
 
 hyundai_checksum = crcmod.mkCrcFun(0x11D, initCrc=0xFD, rev=False, xorOut=0xdf)
-
+# 제네시스DH,G80기준 필요한 핑거
+# BO_ 593(0x251) MDPS12: 8 MDPS
+# BO_ 832(0x340) LKAS11: 8 LDWS_LKAS
+# BO_ 1265(0x4F1) CLU11: 4 CLU 계기판
+# BO_ 1056(0x420) SCC11: 8 SCC
+# BO_ 1057(0x421) SCC12: 8 SCC
+# BO_ 1290(0x50A) SCC13: 8 SCC
+# BO_ 905(0x389) SCC14: 8 SCC
+# BO_ 1157(0x485) LFAHDA_MFC: 4 XXX LFA관련등
 
 def create_lkas11(packer, frame, car_fingerprint, apply_steer, steer_req,
                   lkas11, sys_warning, sys_state, enabled,
                   left_lane, right_lane,
                   left_lane_depart, right_lane_depart, bus, ldws_opt, cut_steer_temp):
-  values = copy.copy(lkas11)
-  values["CF_Lkas_LdwsSysState"] = sys_state
-  values["CF_Lkas_SysWarning"] = 3 if sys_warning else 0
-  values["CF_Lkas_LdwsLHWarning"] = left_lane_depart
+  values = copy.copy(lkas11) # BO_ 832(0x340) LKAS11: 8 LDWS_LKAS
+  values["CF_Lkas_LdwsSysState"] = sys_state # sys_state 변수의 내용을  CF_Lkas_LdwsSysState변수에 저장을 한다...
+  values["CF_Lkas_SysWarning"] = 3 if sys_warning else 0 #sys_warning의 기본값은 3이지만 경고가 있다면 0으로 대체한다..
+  values["CF_Lkas_LdwsLHWarning"] = left_lane_depart # 좌측차로 인식할경우에 carcontroller.py에서 1또는 2를 넣는다..
   values["CF_Lkas_LdwsRHWarning"] = right_lane_depart
   values["CR_Lkas_StrToqReq"] = apply_steer
   values["CF_Lkas_ActToi"] = steer_req and not cut_steer_temp
   values["CF_Lkas_ToiFlt"] = cut_steer_temp  # seems to allow actuation on CR_Lkas_StrToqReq
-  values["CF_Lkas_MsgCount"] = frame % 0x10
   values["CF_Lkas_Chksum"] = 0
+  if car_fingerprint == CAR.GENESIS:
+    values["CF_Lkas_MsgCount"] = frame % 0x10 # LKAS신호이상 개선해보기
+  else:
+    values["CF_Lkas_MsgCount"] = frame % 0x10
 
   if car_fingerprint in FEATURES["send_lfa_mfa"]:
-    values["CF_Lkas_LdwsActivemode"] = int(left_lane) + (int(right_lane) << 1)
-    values["CF_Lkas_LdwsOpt_USM"] = 2
+    values["CF_Lkas_LdwsActivemode"] = int(left_lane) + (int(right_lane) << 1) # 차로 미인식시 0이 나오고 좌측1 우측은 2 양쪽 차로 인식시 3 이다..
+    values["CF_Lkas_LdwsOpt_USM"] = 2 # 차량별 LKAS LDWS등의 고유값..
 
     # FcwOpt_USM 5 = Orange blinking car + lanes
     # FcwOpt_USM 4 = Orange car + lanes
@@ -37,7 +48,7 @@ def create_lkas11(packer, frame, car_fingerprint, apply_steer, steer_req,
     # SysWarning 5 = keep hands on wheel (red)
     # SysWarning 6 = keep hands on wheel (red) + beep
     # Note: the warning is hidden while the blinkers are on
-    values["CF_Lkas_SysWarning"] = 4 if sys_warning else 0
+    values["CF_Lkas_SysWarning"] = 4 if sys_warning else 0 # 평상시 0으로 작동 4가 나올때에는 차량에 알려준다..fcw기능같은것..
 
   elif car_fingerprint == CAR.GENESIS:
     # This field is actually LdwsActivemode
@@ -71,7 +82,7 @@ def create_lkas11(packer, frame, car_fingerprint, apply_steer, steer_req,
   return packer.make_can_msg("LKAS11", bus, values)
 
 def create_clu11(packer, bus, clu11, button, speed):
-  values = copy.copy(clu11)
+  values = copy.copy(clu11) # BO_ 1265(0x4F1) CLU11: 4 CLU 계기판
   values["CF_Clu_CruiseSwState"] = button
   values["CF_Clu_Vanz"] = speed
   values["CF_Clu_AliveCnt1"] = (values["CF_Clu_AliveCnt1"] + 1) % 0x10
@@ -107,14 +118,14 @@ def create_hda_mfc(packer, active, CS, left_lane, right_lane):
   values["HDA_Icon_Wheel"] = 1 if active > 1 and CS.out.cruiseState.enabledAcc else 0
   values["HDA_Icon_State"] = 2 if active > 1 else 0
   values["HDA_Chime"] = 1 if active > 1 else 0
-
+  # 파파  HDA 개인화 적용
   return packer.make_can_msg("LFAHDA_MFC", 0, values)
 
 def create_mdps12(packer, frame, mdps12):
-  values = copy.copy(mdps12)
+  values = copy.copy(mdps12) # BO_ 593(0x251) MDPS12: 8 MDPS
   values["CF_Mdps_ToiActive"] = 0
   values["CF_Mdps_ToiUnavail"] = 1
-  values["CF_Mdps_MsgCount2"] = frame % 0x100
+  values["CF_Mdps_MsgCount2"] = frame % 0x100 # 0x100을 50으로 수정해봄
   values["CF_Mdps_Chksum2"] = 0
 
   dat = packer.make_can_msg("MDPS12", 2, values)[2]
@@ -124,7 +135,7 @@ def create_mdps12(packer, frame, mdps12):
   return packer.make_can_msg("MDPS12", 2, values)
 
 def create_scc11(packer, frame, enabled, set_speed, lead_visible, scc_live, scc11, active_cam, stock_cam):
-  values = copy.copy(scc11)
+  values = copy.copy(scc11) # BO_ 1056(0x420) SCC11: 8 SCC
   values["AliveCounterACC"] = frame // 2 % 0x10
 
   if not stock_cam:
@@ -173,11 +184,11 @@ def create_scc12(packer, apply_accel, enabled, cnt, scc_live, scc12, gaspressed,
   return packer.make_can_msg("SCC12", 0, values)
 
 def create_scc13(packer, scc13):
-  values = copy.copy(scc13)
+  values = copy.copy(scc13) # BO_ 1290(0x50A) SCC13: 8 SCC
   return packer.make_can_msg("SCC13", 0, values)
 
 def create_scc14(packer, enabled, e_vgo, standstill, accel, gaspressed, objgap, scc14):
-  values = copy.copy(scc14)
+  values = copy.copy(scc14)  # BO_ 905(0x389) SCC14: 8 SCC
 
   # from xps-genesis
   if enabled:

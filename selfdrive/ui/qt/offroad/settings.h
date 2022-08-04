@@ -192,3 +192,15 @@ public:
   explicit CommunityPanel(QWidget *parent = nullptr);
 };
 
+
+class TenesiPanel : public QWidget {
+  Q_OBJECT
+public:
+  explicit TenesiPanel(QWidget *parent = nullptr);
+};
+
+class TbranchPanel : public QWidget {
+  Q_OBJECT
+public:
+  explicit TbranchPanel(QWidget *parent = nullptr);
+};

@@ -6,9 +6,10 @@ from common.realtime import DT_MDL
 from selfdrive.hardware import EON, TICI
 from selfdrive.swaglog import cloudlog
 from selfdrive.ntune import ntune_common_get
+from common.params import Params
 
-ENABLE_ZORROBYTE = True
-ENABLE_INC_LANE_PROB = True
+ENABLE_ZORROBYTE = Params().get_bool('Zorrobyte') # 조로바이트 차로인식 적용 옵션
+ENABLE_INC_LANE_PROB = Params().get_bool('Neokiibyte') # 네오캇 차로인식 적용 옵션
 
 TRAJECTORY_SIZE = 33
 # camera offset is meters from center car to camera
@@ -93,8 +94,8 @@ class LanePlanner:
     r_prob *= r_std_mod
 
     if ENABLE_ZORROBYTE:
-      # zorrobyte code
-      if l_prob > 0.5 and r_prob > 0.5:
+      # zorrobyte code # Find current lanewidth 차로폭 계산등으로 활용해보기로 조로바이트코드와 융합 테네시 추가
+      if l_prob > 0.5 and r_prob > 0.5: # 0.5 테네시수정 0.4 2차 0.6으로 해보기
         self.frame += 1
         if self.frame > 20:
           self.frame = 0
@@ -125,7 +126,7 @@ class LanePlanner:
     self.d_prob = l_prob + r_prob - l_prob * r_prob
 
     # neokii
-    if ENABLE_INC_LANE_PROB and self.d_prob > 0.65:
+    if ENABLE_INC_LANE_PROB and self.d_prob > 0.65: #수치조정
       self.d_prob = min(self.d_prob * 1.3, 1.0)
 
     lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)

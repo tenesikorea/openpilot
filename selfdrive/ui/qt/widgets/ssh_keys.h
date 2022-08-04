@@ -32,3 +32,14 @@ private:
   void refresh();
   void getUserKeys(const QString &username);
 };
+
+class GitHash : public AbstractControl {
+  Q_OBJECT
+
+public:
+  GitHash();
+
+private:
+  QLabel local_hash;
+  Params params;
+};

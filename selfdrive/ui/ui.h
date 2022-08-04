@@ -51,18 +51,18 @@ struct Alert {
       // Handle controls timeout
       if (sm.rcv_frame("controlsState") < started_frame) {
         // car is started, but controlsState hasn't been seen at all
-        return {"openpilot Unavailable", "Waiting for controls to start",
+        return {"자율 주행을 시작할수 없사와요~", "교주사마~ 도와주세요~~ 니가 수정 잘못한건 아니고???",
                 "controlsWaiting", cereal::ControlsState::AlertSize::MID,
                 AudibleAlert::NONE};
       } else if (controls_missing > CONTROLS_TIMEOUT) {
         // car is started, but controls is lagging or died
         if (cs.getEnabled() && (controls_missing - CONTROLS_TIMEOUT) < 10) {
-          return {"TAKE CONTROL IMMEDIATELY", "Controls Unresponsive",
+          return {"..조향 도움등을 할수가 없습니다..", "..차량과 제어가 문제가 있습니다..문제는 알아서 찾으삼!",
                   "controlsUnresponsive", cereal::ControlsState::AlertSize::FULL,
                   AudibleAlert::WARNING_IMMEDIATE};
         } else {
-          return {"Controls Unresponsive", "Reboot Device",
-                  "controlsUnresponsivePermanent", cereal::ControlsState::AlertSize::MID,
+          return {"..차량과 제어가 문제가 있습니다..문제는 알아서 찾으삼!", "재부팅을 추천!",
+                  "..차량과 제어가 문제가 있습니다..문제는 알아서 찾으삼!", cereal::ControlsState::AlertSize::MID,
                   AudibleAlert::NONE};
         }
       }
@@ -143,6 +143,11 @@ public:
   bool recording = false;
   bool show_debug = false;
   std::string lat_control;
+  //테네시 기어단수 BSD
+  bool show_gear = false;
+  bool show_bsd = false;
+  bool show_erpm = false;
+
 
 signals:
   void uiUpdate(const UIState &s);

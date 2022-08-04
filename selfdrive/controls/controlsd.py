@@ -32,6 +32,10 @@ from selfdrive.manager.process_config import managed_processes
 from selfdrive.car.hyundai.scc_smoother import SccSmoother
 from selfdrive.ntune import ntune_common_get, ntune_common_enabled, ntune_scc_get
 
+SR_SCALE_BP = [0., 05., 10., 15., 20., 25., 30., 35., 40., 45., 50., 55., 60., 65., 70., 75., 80., 85., 90., 95., 100., 105., 110., 115., 120., 125., 130.]
+SR_SCALE_V = [16.5, 16.5, 16.5, 16.5, 17.2, 17.2, 17.2, 17.2, 16.5, 16.5, 16.5, 16.8, 16.8, 16.8, 16.8, 16.8, 16.8, 15.5, 15.2, 14.8, 14.3, 14.3, 14.3, 14.3, 14.0, 14.0, 14.0]
+#                 0   5    10   15    20    25    30    35    40    45    50    55    60    65    70    75    80    85    90    95    100   105   110   115   120   125   130
+
 SOFT_DISABLE_TIME = 3  # seconds
 LDW_MIN_SPEED = 31 * CV.MPH_TO_MS
 LANE_DEPARTURE_THRESHOLD = 0.1
@@ -358,14 +362,14 @@ class Controls:
       # Check for mismatch between openpilot and car's PCM
       cruise_mismatch = CS.cruiseState.enabledAcc and (not self.enabled or not self.CP.pcmCruise)
       self.cruise_mismatch_counter = self.cruise_mismatch_counter + 1 if cruise_mismatch else 0
-      if self.cruise_mismatch_counter > int(3. / DT_CTRL):
+      if self.cruise_mismatch_counter > int(6. / DT_CTRL): # 수치3을 200509 교주발? 6으로 수정
         self.events.add(EventName.cruiseMismatch)
 
     # Check for FCW
     stock_long_is_braking = self.enabled and not self.CP.openpilotLongitudinalControl and CS.aEgo < -1.25
     model_fcw = self.sm['modelV2'].meta.hardBrakePredicted and not CS.brakePressed and not stock_long_is_braking
     planner_fcw = self.sm['longitudinalPlan'].fcw and self.enabled
-    if not self.disable_op_fcw and (planner_fcw or model_fcw):
+    if not self.disable_op_fcw and (planner_fcw or model_fcw): #FCW 작동 방식 개조
       self.events.add(EventName.fcw)
 
     if TICI:
@@ -571,6 +575,9 @@ class Controls:
     else:
       sr = max(ntune_common_get('steerRatio'), 0.1)
 
+    if Params().get_bool('Steer_Tune'):
+      sr = interp(CS.vEgo * 3.6, SR_SCALE_BP, SR_SCALE_V) * 0.95 # Sr비율조절
+
     self.VM.update_params(x, sr)
 
     lat_plan = self.sm['lateralPlan']
@@ -640,8 +647,8 @@ class Controls:
         left_deviation = actuators.steer > 0 and dpath_points[0] < -0.20
         right_deviation = actuators.steer < 0 and dpath_points[0] > 0.20
 
-        if left_deviation or right_deviation:
-          self.events.add(EventName.steerSaturated)
+        #if left_deviation or right_deviation: # 조향제어 경고 해제
+          #self.events.add(EventName.steerSaturated)
 
     # Ensure no NaNs/Infs
     for p in ACTUATOR_FIELDS:
@@ -780,6 +787,8 @@ class Controls:
 
     controlsState.angleSteers = steer_angle_without_offset * CV.RAD_TO_DEG
     controlsState.applyAccel = self.apply_accel
+    controlsState.fusedAccel = self.fused_accel # Auto-resume Cruise Set Speed by JangPoo - 파파
+    controlsState.leadDist = self.lead_drel # Auto-resume Cruise Set Speed by JangPoo - 파파
     controlsState.aReqValue = self.aReqValue
     controlsState.aReqValueMin = self.aReqValueMin
     controlsState.aReqValueMax = self.aReqValueMax

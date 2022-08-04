@@ -469,15 +469,17 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
     {"Device", device},
     {"Network", network_panel(this)},
     {"Toggles", new TogglesPanel(this)},
+    {"Branch", new TbranchPanel(this)},
+    {"Tenesi", new TenesiPanel(this)},
     {"Software", new SoftwarePanel(this)},
     {"Community", new CommunityPanel(this)},
   };
 
-#ifdef ENABLE_MAPS
+/*#ifdef ENABLE_MAPS
   auto map_panel = new MapPanel(this);
-  panels.push_back({"Navigation", map_panel});
+  panels.push_back({tr("Navigation"), map_panel});
   QObject::connect(map_panel, &MapPanel::closeSettings, this, &SettingsWindow::closeSettings);
-#endif
+#endif*/
 
   const int padding = panels.size() > 3 ? 25 : 35;
 
@@ -1010,3 +1012,162 @@ LateralControl::LateralControl(QWidget* parent): QWidget(parent) {
 
   main_layout->addWidget(list);
 }
+
+//테네시 브랜치 메뉴 추가해보기
+TbranchPanel::TbranchPanel(QWidget* parent) : QWidget(parent) {
+  QVBoxLayout *layout = new QVBoxLayout(this);
+
+  // 테네시 깃풀설정등추가
+
+  layout->addWidget(new GitHash()); // 깃 업데이트 시작
+  const char* gitpull = "/data/openpilot/gitpull.sh ''";
+  auto gitpullBtn = new ButtonControl("깃 풀 업데이트", "실 행");
+  layout->addWidget(gitpullBtn);
+  QObject::connect(gitpullBtn, &ButtonControl::clicked, [=]() {
+    if (ConfirmationDialog::confirm("브랜치의 업데이트를 다운로드하고 적용합니까? \n펭펭~ 재부팅은 수동으로...펭펭~", this)) {
+      std::system(gitpull);
+      std::system("rm /data/openpilot/prebuilt");
+    }
+  });
+
+  layout->addWidget(horizontal_line());
+  const char* git_reset = "/data/openpilot/git_reset.sh ''";
+  auto gitrestBtn = new ButtonControl("깃 리셋", "실 행");
+  layout->addWidget(gitrestBtn);
+  QObject::connect(gitrestBtn, &ButtonControl::clicked, [=]() {
+    if (ConfirmationDialog::confirm("C2 에서 수정된것을 초기화 시켜요!\n 재부팅이 안되요~ 펭펭~펭펭~", this)) {
+      std::system(git_reset);
+      std::system("rm /data/openpilot/prebuilt");
+    }
+  });
+
+  layout->addWidget(horizontal_line());
+  const char* gitpull_cancel = "/data/openpilot/gitpull_cancel.sh ''";
+  auto gitpull_cancelBtn = new ButtonControl("깃풀 이전 단계로", "실 행");
+  layout->addWidget(gitpull_cancelBtn);
+  QObject::connect(gitpull_cancelBtn, &ButtonControl::clicked, [=]() {
+    if (ConfirmationDialog::confirm("깃풀을 취소합니다! 펭펭~ \n 재부팅 수동으로...펭펭~", this)) {
+      std::system(gitpull_cancel);
+      std::system("rm /data/openpilot/prebuilt");
+    }
+  });
+  layout->addWidget(horizontal_line());
+
+  auto TenesiSSHLegacy_Btn = new ButtonControl("공용 SSH키를 사용", "실 행");
+  layout->addWidget(TenesiSSHLegacy_Btn);
+  QObject::connect(TenesiSSHLegacy_Btn, &ButtonControl::clicked, [=]() {
+    if (ConfirmationDialog::confirm("공용 SSH키를 사용하게 설정합니다.! 펭펭~ \n 재부팅 수동으로...펭펭~", this)) {
+      std::system("cp -f /data/openpilot/selfdrive/assets/sshkey/GithubSshKeys_legacy /data/params/d/GithubSshKeys");
+      std::system("chmod 600 /data/params/d/GithubSshKeys");
+    }
+  });
+ // 깃 업데이트 관련끝
+
+} // 테네시 브랜치 관리메뉴
+
+//테네시 메뉴 추가해보기
+TenesiPanel::TenesiPanel(QWidget* parent) : QWidget(parent) {
+  QVBoxLayout *layout = new QVBoxLayout(this);
+
+  layout->addWidget(horizontal_line()); // 구분선 구간
+  layout->addWidget(new ParamControl("Steer_409",
+                                            "조향토크 409설정",
+                                            "조향토크를 409로 무조건 설정 GenesisDH 테스트용",
+                                            "../assets/offroad/icon_shell.png"
+                                            ));
+  layout->addWidget(new ParamControl("Steer_Tune",
+                                            "조향비율 가변",
+                                            "SR값을 속도대비 가변으로 사용하기",
+                                            "../assets/offroad/icon_shell.png"
+                                            ));
+  layout->addWidget(new ParamControl("Steer_90D",
+                                            "조향각 90도 제한",
+                                            "제네시스DH 조향에러시 사용권고",
+                                            "../assets/offroad/icon_shell.png"
+                                            ));
+  layout->addWidget(new ParamControl("TenesiSSHLegacy",
+                                            "SSH 공용키 사용",
+                                            "SSH 공용키 사용..",
+                                            "../assets/offroad/icon_shell.png"
+                                            ));
+  layout->addWidget(new ParamControl("T_Debug",
+                                            "Tmux a 저장옵션",
+                                            "Tmux a 내용을 화일로 저장합니다..",
+                                            "../assets/offroad/icon_shell.png"
+                                            ));
+  layout->addWidget(new ParamControl("Zorrobyte",
+                                            "차로인식 Zorrobyte",
+                                            "차로인식 Zorrobyte 적용선택",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+  layout->addWidget(new ParamControl("Neokiibyte",
+                                            "차로인식 NeokiiByte",
+                                            "차로인식 NeokiiByte 적용여부 선택",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+  layout->addWidget(horizontal_line()); // 구분선 구간
+  layout->addWidget(new ParamControl("Sound_Start",
+                                            "오프시작시 음성지원 선택",
+                                            "오프시작시 음성 온 오프",
+                                            "../assets/offroad/icon_shell.png"
+                                            ));
+  layout->addWidget(new ParamControl("Sound_Slow",
+                                            "TMAP 자동감속 음성지원 선택",
+                                            "네비 감속시 음성 온 오프",
+                                            "../assets/offroad/icon_shell.png"
+                                            ));
+  layout->addWidget(new ParamControl("SoundAutoHold",
+                                            "오토홀드음성지원",
+                                            "오토홀드음성을 끄거나 켭니다..",
+                                            "../assets/offroad/icon_shell.png"
+                                            ));
+  layout->addWidget(new ParamControl("SoundBsd",
+                                            "측후방 음성지원",
+                                            "측후방 센서 작동시 음성을 끄거나 켭니다.",
+                                            "../assets/offroad/icon_shell.png"
+                                            ));
+  layout->addWidget(horizontal_line()); // 구분선 구간
+  layout->addWidget(new ParamControl("TenesiCamera",
+                                            "NDA 상시 카메라경고",
+                                            "NDA 카메라 경고를 계기판과 HUD에 끄거나 켭니다.",
+                                            "../assets/offroad/icon_shell.png"
+                                            ));
+  layout->addWidget(new ParamControl("AutoSetOpt",
+                                            "크루즈 오토 셋",
+                                            "파파의 오토크루즈 셋 적용",
+                                            "../assets/offroad/icon_road.png",
+                                            this));
+  layout->addWidget(new ParamControl("ShowErpmUI",
+                                            "엔진RPM 표시",
+                                            "현재엔진RPM 표시하기..",
+                                            "../assets/offroad/icon_shell.png"
+                                            ));
+  layout->addWidget(new ParamControl("ShowCgearUI",
+                                            "주행기어단수 보기",
+                                            "기어레버 위치와 기어단수를 볼수 있습니다..",
+                                            "../assets/offroad/icon_shell.png"
+                                            ));
+  layout->addWidget(new ParamControl("ShowBsdUI",
+                                            "측후방정보 보기",
+                                            "측후방 감지기 이미지를 볼수 있습니다..",
+                                            "../assets/offroad/icon_shell.png"
+                                            ));
+  layout->addWidget(horizontal_line());
+
+  auto recorddelbtn = new ButtonControl("녹화파일 전부 삭제", "실행");
+    QObject::connect(recorddelbtn, &ButtonControl::clicked, [=]() {
+      if (ConfirmationDialog::confirm("저장된 녹화파일을 모두 삭제합니다. 진행하시겠습니까?", this)){
+        std::system("rm -f /data/media/0/videos/*");
+      }
+    });
+    layout->addWidget(recorddelbtn);
+
+  auto realdatadelbtn = new ButtonControl("주행로그-영상 전부 삭제", "실행");
+    QObject::connect(realdatadelbtn, &ButtonControl::clicked, [=]() {
+      if (ConfirmationDialog::confirm("저장된 주행로그 영상을 모두 삭제합니다. 진행하시겠습니까?", this)){
+        std::system("rm -rf /data/media/0/realdata/*");
+      }
+    });
+    layout->addWidget(realdatadelbtn);
+
+} // 테네시 메뉴 추가

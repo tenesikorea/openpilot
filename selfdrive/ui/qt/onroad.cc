@@ -260,6 +260,8 @@ void NvgWindow::initializeGL() {
   ic_turn_signal_l = QPixmap("../assets/images/turn_signal_l.png");
   ic_turn_signal_r = QPixmap("../assets/images/turn_signal_r.png");
   ic_satellite = QPixmap("../assets/images/satellite.png");
+  ic_bsd_l = QPixmap("../assets/images/img_car_left.png"); // 측후방 이미지
+  ic_bsd_r = QPixmap("../assets/images/img_car_right.png"); // 측후방 이미지
 }
 
 void NvgWindow::updateFrameMat(int w, int h) {
@@ -460,8 +462,17 @@ void NvgWindow::drawHud(QPainter &p) {
   drawSteer(p);
   drawThermal(p);
   drawRestArea(p);
-  drawTurnSignals(p);
+  //drawTurnSignals(p);
   drawGpsStatus(p);
+
+  if(s->show_bsd && width() > 1200)
+    drawBsd(p);//bsd표시하기
+
+  if(s->show_gear && width() > 1200)
+    drawCgear(p);//현재기어단수
+
+  if(s->show_erpm && width() > 1200)
+    drawErpm(p);//현재 엔진 rpm
 
   if(s->show_debug && width() > 1200)
     drawDebugText(p);
@@ -586,16 +597,16 @@ void NvgWindow::drawBottomIcons(QPainter &p) {
   // brake
   x = radius / 2 + (bdr_s * 2) + (radius + 50) * 2;
   bool brake_valid = car_state.getBrakeLights();
-  float img_alpha = brake_valid ? 1.0f : 0.15f;
-  float bg_alpha = brake_valid ? 0.3f : 0.1f;
+  float img_alpha = brake_valid ? 1.0f : 0.05f;
+  float bg_alpha = brake_valid ? 0.15f : 0.05f;
   drawIcon(p, x, y, ic_brake, QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
 
   // auto hold
   int autohold = car_state.getAutoHold();
   if(autohold >= 0) {
     x = radius / 2 + (bdr_s * 2) + (radius + 50) * 3;
-    img_alpha = autohold > 0 ? 1.0f : 0.15f;
-    bg_alpha = autohold > 0 ? 0.3f : 0.1f;
+    img_alpha = autohold > 0 ? 1.0f : 0.05f;
+    bg_alpha = autohold > 0 ? 0.15f : 0.05f;
     drawIcon(p, x, y, autohold > 1 ? ic_autohold_warning : ic_autohold_active,
             QColor(0, 0, 0, (255 * bg_alpha)), img_alpha);
   }
@@ -675,13 +686,14 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
     limit_speed = sectionLimitSpeed;
     left_dist = sectionLeftDist;
   }
+  //activeNDA = 1; // 테스트용
 
   if(activeNDA > 0)
   {
       int w = 120;
       int h = 54;
-      int x = (width() + (bdr_s*2))/2 - w/2 - bdr_s;
-      int y = 40 - bdr_s;
+      int x = 80;
+      int y = height() - h - 80 - 150 - 170;
 
       p.setOpacity(1.f);
       p.drawPixmap(x, y, w, h, activeNDA == 1 ? ic_nda : ic_hda);
@@ -838,8 +850,8 @@ void NvgWindow::drawMaxSpeed(QPainter &p) {
 
 void NvgWindow::drawSteer(QPainter &p) {
 
-  int x = 30;
-  int y = 540;
+  int x = 460; // 기존위치 30 테네시 이동
+  int y = 600; // 기존위치 390 테네시 이동
 
   const SubMaster &sm = *(uiState()->sm);
   auto car_state = sm["carState"].getCarState();
@@ -1246,4 +1258,135 @@ void NvgWindow::drawDebugText(QPainter &p) {
   y += height;
   str.sprintf("Lead: %.1f/%.1f/%.1f\n", radar_dist, vision_dist, (radar_dist - vision_dist));
   p.drawText(text_x, y, str);
+}
+
+
+void NvgWindow::drawCgear(QPainter &p) {
+  const SubMaster &sm = *(uiState()->sm);
+  auto car_state = sm["carState"].getCarState();
+
+  auto t_gear = car_state.getCurrentGear(); // car.capnp 에서 정의된 currentGear변수명의 데이터를 읽는다..
+  int shifter;
+
+  shifter = int(car_state.getGearShifter());
+
+  QString tgear, tgearshifter;//문자변수 선언
+
+  tgear.sprintf("%.0f", t_gear);
+  configFont(p, "Open Sans", 170, "Regular");
+
+  //shifter = 1; //디버그용
+  p.setPen(QColor(255, 165, 0, 255)); //오렌지색기본
+
+  int x_gear = 85;
+  int y_gear = 800;
+  // 주행시에 현재기어 단수가 나오게 하는데 조건은 D드라이브 모드이어야 하고 만약아니라면 그건 PRN이므로 기어쉬프트레버종류에 따라서 아래 수치도 변경을 요함
+  if ((t_gear < 9) && (t_gear !=0)) { // 드라이브 모드일때 5번 8번은 노말드라이브 수동기어모드 드라이브이다..
+    p.drawText(x_gear, y_gear, tgear);
+  } else if (t_gear == 14 ) { // 기어 정보를 계기판등에서 얻는다면 14가 아니고  LVR12또는 ELECT_GEAR데이터 carstate.py 데이터인 7이 된다..
+    p.setPen(QColor(201, 34, 49, 255));
+    p.drawText(x_gear, y_gear, "R");
+  } else if (shifter == 1 ) { // 기어 정보를 계기판등에서 얻는다면 3가 아니고  LVR12또는 ELECT_GEAR데이터 carstate.py 데이터인 0이 된다..
+    p.setPen(QColor(0, 255, 0, 255));
+    p.drawText(x_gear, y_gear, "P");
+  } else if (shifter == 3 ) {  // 기어 정보를 계기판등에서 얻는다면 3가 아니고  LVR12또는 ELECT_GEAR데이터 carstate.py 데이터인 6이 된다..
+    p.setPen(QColor(0, 0, 255, 255));
+    p.drawText(x_gear, y_gear, "N");
+  }
+  // 1 "P"   2 "D"  3 "N" 4 "R"
+
+}
+
+void NvgWindow::drawBsd(QPainter &p) {
+  const SubMaster &sm = *(uiState()->sm);
+  auto car_state = sm["carState"].getCarState();
+
+  const int position_x = 900; //X축 위치
+  const int car_y = 620; // Y축 위치
+  const int car_size = 230; //아이콘크기 거의 수정안함
+
+  const int center_x = width() / 2; //화면(테두리를 제외한) 가로중심
+
+  int car_x_left =  center_x - position_x;
+  int car_x_right = center_x + position_x;
+
+   car_x_left = 115;
+   car_x_right = 2005;
+
+  const int car_img_size_w = (car_size * 1);
+  const int car_img_size_h = (car_size * 1);
+  const int car_img_x_left = (car_x_left - (car_img_size_w / 2));
+  const int car_img_x_right = (car_x_right - (car_img_size_w / 2));
+  const int car_img_y = (car_y - (car_size / 4));
+
+  int blindspot_blinkingrate = 120;
+  int car_valid_status_changed = 0;
+  int car_valid_status = 0;
+
+  bool car_valid_left = bool(car_state.getLeftBlindspot());
+  bool car_valid_right = bool(car_state.getRightBlindspot());
+
+  //car_valid_left = 1; // ui 테스트용
+  //car_valid_right = 1;
+
+    if (car_valid_status_changed != car_valid_status) {
+      blindspot_blinkingrate = 114;
+      car_valid_status_changed = car_valid_status;
+    }
+    if (car_valid_left || car_valid_right) {
+      if (!car_valid_left && car_valid_right) {
+        car_valid_status = 1;
+      } else if (car_valid_left && !car_valid_right) {
+        car_valid_status = 2;
+      } else if (car_valid_left && car_valid_right) {
+        car_valid_status = 3;
+      } else {
+        car_valid_status = 0;
+      }
+      blindspot_blinkingrate -= 6;
+      if(blindspot_blinkingrate<0) blindspot_blinkingrate = 120;
+      if (blindspot_blinkingrate>=60) {
+        p.setOpacity(1.0);
+      } else {
+        p.setOpacity(0.0);;
+      }
+    } else {
+      blindspot_blinkingrate = 120;
+    }
+
+    if(car_valid_left) {
+      p.drawPixmap(car_img_x_left, car_img_y, car_img_size_w, car_img_size_h, ic_bsd_l);
+    }
+    if(car_valid_right) {
+      p.drawPixmap(car_img_x_right, car_img_y, car_img_size_w, car_img_size_h, ic_bsd_r);
+    }
+
+}
+
+void NvgWindow::drawErpm(QPainter &p) { // rpm정보 - 함수선언
+  const SubMaster &sm = *(uiState()->sm);
+  auto car_state = sm["carState"].getCarState();
+
+  auto t_Erpm = car_state.getCurrentErpm(); // car.capnp 에서 정의된 currentErpm변수명의 데이터를 읽는다..
+  //t_Erpm = 1000; //디버그용
+
+  QString tErpm;//문자 변수 선언 - t_Erpm데이터를 문자화한다..실수를 문자로
+
+  tErpm.sprintf("%.0f", t_Erpm); // 문자변수에 포맷을 지정해서 저장.
+  configFont(p, "Open Sans", 80, "Regular");
+
+  p.setPen(QColor(255, 165, 0, 255)); //오렌지색기본
+
+  if (t_Erpm > 999) {
+    int x_eRpm = 285;
+    int y_eRpm = 800;
+    p.drawText(x_eRpm, y_eRpm, tErpm);
+    p.drawText(x_eRpm+15, y_eRpm-80, "RPM");
+  } else {
+    int x_eRpm = 285;
+    int y_eRpm = 800;
+    p.drawText(x_eRpm, y_eRpm, tErpm);
+    p.drawText(x_eRpm, y_eRpm-80, "RPM");
+  }
+
 }

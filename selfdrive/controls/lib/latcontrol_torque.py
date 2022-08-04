@@ -6,6 +6,13 @@ from selfdrive.controls.lib.latcontrol import LatControl, MIN_STEER_SPEED
 from selfdrive.controls.lib.pid import PIDController
 from selfdrive.controls.lib.drive_helpers import apply_deadzone
 from selfdrive.controls.lib.vehicle_model import ACCELERATION_DUE_TO_GRAVITY
+from common.params import Params, put_nonblocking
+
+MLA_SCALE_BP = [0., 10., 20., 30., 40., 50., 60., 70., 80., 90., 100., 110., 115., 120., 125., 130., 140., 150., 160.]
+MLA_SCALE_V = [2.0, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 4.0, 4.0, 5.0, 5.0, 5.0, 5.0, 5.0, 6.0]
+#               0   10   20   30   40   50   60   70   80   90   100  110  115  120  125  130  140  150  160
+#if Params().get_bool('Steer_Tune'):
+#  MAX_LAT_ACCEL = interp(CS.vEgo * 3.6, MLA_SCALE_BP, MLA_SCALE_V) * 1.0  # 속도별 Max_Lat_Accel조절
 
 # At higher speeds (25+mph) we can assume:
 # Lateral acceleration achieved by a specific car correlates to

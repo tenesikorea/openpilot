@@ -4,7 +4,7 @@ from typing import List
 from cereal import car
 from common.numpy_fast import interp
 from common.conversions import Conversions as CV
-from selfdrive.car.hyundai.values import CAR, Buttons, CarControllerParams
+from selfdrive.car.hyundai.values import CAR, Buttons, CarControllerParams, FEATURES
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, gen_empty_fingerprint, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
 from common.params import Params
@@ -20,6 +20,8 @@ class CarInterface(CarInterfaceBase):
     super().__init__(CP, CarController, CarState)
     self.cp2 = self.CS.get_can2_parser(CP)
     self.mad_mode_enabled = Params().get_bool('MadModeEnabled')
+    self.sound_auto_hold = Params().get_bool('SoundAutoHold') # 테네시 음성관련
+    self.sound_bsd = Params().get_bool('SoundBsd') # 테네시 음성관련
 
   @staticmethod
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
@@ -36,6 +38,7 @@ class CarInterface(CarInterfaceBase):
     ret = CarInterfaceBase.get_std_params(candidate, fingerprint)
 
     ret.openpilotLongitudinalControl = Params().get_bool('LongControlEnabled')
+    #ret.c3Mdps = Params().get_bool('C3MdpsSet') # 콤마3 mdps bus 1으로 고정옵션 220421해제
 
     ret.carName = "hyundai"
     ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.hyundaiLegacy, 0)]
@@ -107,8 +110,27 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 1900. + STD_CARGO_KG
       ret.wheelbase = 3.01
       ret.centerToFront = ret.wheelbase * 0.4
-      ret.maxSteeringAngleDeg = 90.
-      ret.steerFaultMaxAngle = 0
+      if Params().get_bool('Steer_90D'):  # 테네시 음성관련
+        ret.maxSteeringAngleDeg = 90. # 90도 제한 걸기
+        ret.steerFaultMaxAngle = 0 # 90도 제한 걸기
+      ret.steerFaultMaxAngle = 85
+      ret.steerFaultMaxFrames = 90
+      ret.steerRatio = 16.50 # DH 특성화 적용
+      ret.steerActuatorDelay = 0.15 # DH 특성화 적용
+      #ret.steerRateCost = 0.40 # DH 특성화 적용 - 220701부터 삭제
+      ret.vEgoStopping = 0.2 # DH 특성화 적용-정지시 브레이킹 감도 조절
+      ret.vEgoStarting = 0.01 # DH 특성화 적용-정지시 브레이킹 감도 조절
+      # 토크조향 옵션시 엔튠에서 해당항목의 기본설정값을 해당차종에 맞게 설정하는 값을 넣었다..
+      if ret.lateralTuning.which() == 'torque':
+        ret.lateralTuning.torque.useSteeringAngle = True
+        max_lat_accel = 2.7
+        ret.lateralTuning.torque.kp = 1.0 / max_lat_accel
+        ret.lateralTuning.torque.kf = 1.0 / max_lat_accel
+        ret.lateralTuning.torque.ki = 0.01 / max_lat_accel
+        ret.lateralTuning.torque.friction = 0.003
+        ret.lateralTuning.torque.kd = 1.0
+        ret.lateralTuning.torque.steeringAngleDeadzoneDeg = 0.1
+
     elif candidate == CAR.GENESIS_G70:
       ret.mass = 1640. + STD_CARGO_KG
       ret.wheelbase = 2.84
@@ -121,7 +143,14 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 2200
       ret.wheelbase = 3.15
       ret.centerToFront = ret.wheelbase * 0.4
+
+      # thanks to 파파
       ret.steerRatio = 16.0
+      ret.steerActuatorDelay = 0.075
+
+      if ret.lateralTuning.which() == 'torque':
+        torque_tune(ret.lateralTuning, 2.5, 0.01)
+
     elif candidate == CAR.GENESIS_EQ900_L:
       ret.mass = 2290
       ret.wheelbase = 3.45
@@ -157,7 +186,13 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 1999. + STD_CARGO_KG
       ret.wheelbase = 2.90
       ret.centerToFront = ret.wheelbase * 0.4
-      ret.steerRatio = 17.9
+
+      # thanks to 지구별(alexhys)
+      ret.steerRatio = 16.0
+      ret.steerActuatorDelay = 0.075
+
+      if ret.lateralTuning.which() == 'torque':
+        torque_tune(ret.lateralTuning, 2.3, 0.01)
 
     elif candidate in [CAR.ELANTRA, CAR.ELANTRA_GT_I30]:
       ret.mass = 1275. + STD_CARGO_KG
@@ -225,8 +260,8 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = 2.80
       tire_stiffness_factor = 0.7
       ret.centerToFront = ret.wheelbase * 0.4
-    elif candidate in [CAR.K5_2021]:
-      ret.mass = 3228. * CV.LB_TO_KG
+    elif candidate in [CAR.K5_2021, CAR.K5_HEV_2022]:
+      ret.mass = 1515. + STD_CARGO_KG
       ret.wheelbase = 2.85
       tire_stiffness_factor = 0.7
     elif candidate == CAR.STINGER:
@@ -271,7 +306,7 @@ class CarInterface(CarInterfaceBase):
       ret.centerToFront = ret.wheelbase * 0.4
       ret.steerRatio = 17.25
     elif candidate == CAR.K9:
-      ret.mass = 2005. + STD_CARGO_KG
+      ret.mass = 2075. + STD_CARGO_KG
       ret.wheelbase = 3.15
       ret.centerToFront = ret.wheelbase * 0.4
       tire_stiffness_factor = 0.8
@@ -312,18 +347,25 @@ class CarInterface(CarInterfaceBase):
 
     # ignore CAN2 address if L-CAN on the same BUS
     ret.mdpsBus = 1 if 593 in fingerprint[1] and 1296 not in fingerprint[1] else 0
+    # if ret.c3Mdps: # 콤3 사용자가 mdps버스1 고정 옵션을 켜면 대응한다
+    # ret.mdpsBus = 1
     ret.sasBus = 1 if 688 in fingerprint[1] and 1296 not in fingerprint[1] else 0
     ret.sccBus = 0 if 1056 in fingerprint[0] else 1 if 1056 in fingerprint[1] and 1296 not in fingerprint[1] \
                                                                      else 2 if 1056 in fingerprint[2] else -1
 
-    if ret.sccBus >= 0:
-      ret.hasScc13 = 1290 in fingerprint[ret.sccBus]
-      ret.hasScc14 = 905 in fingerprint[ret.sccBus]
+      if ret.sccBus >= 0: # sccbus의 종류를 자동을 파악 저장한다.
+        ret.hasScc13 = 1290 in fingerprint[ret.sccBus]
+        ret.hasScc14 = 905 in fingerprint[ret.sccBus]
 
-    ret.hasEms = 608 in fingerprint[0] and 809 in fingerprint[0]
-    ret.hasLfaHda = 1157 in fingerprint[0]
+      ret.hasEms = 608 in fingerprint[0] and 809 in fingerprint[0]
+      ret.hasLfaHda = 1157 in fingerprint[0] or candidate in FEATURES['has_hda'] # 파파 개인화 적용-교주사마공식적용
+      ret.radarOffCan = ret.sccBus == -1
+    # Detect smartMDPS: the smartMDPS allows openpilot to continue lateral actuation past the lateral low speed lockout by intercepting CF_Clu_Vanz from the MDPS
+    smartMdps = 0x2AA in fingerprint[0]
+    # If the smartMDPS is detected, openpilot can send lateral actuation when lower than minSteerSpeed without faulting
+    if smartMdps:
+      ret.minSteerSpeed = 0
 
-    ret.radarOffCan = ret.sccBus == -1
     ret.pcmCruise = not ret.radarOffCan
 
     # set safety_hyundai_community only for non-SCC, MDPS harrness or SCC harrness cars or cars that have unknown issue
@@ -416,6 +458,12 @@ class CarInterface(CarInterfaceBase):
         # do enable on decel button only
         if b.type == ButtonType.decelCruise and not b.pressed:
           events.add(EventName.buttonEnable)
+
+    if self.CS.brakeHold and self.sound_auto_hold: # 오토홀드 - 음성메시지
+      events.add(EventName.brakeHold)
+
+    if (ret.leftBlindspot or ret.rightBlindspot) and self.sound_bsd: # BSD-음성메시지
+      events.add(EventName.bsdboy)
 
     # scc smoother
     if self.CC.scc_smoother is not None:

@@ -71,6 +71,8 @@ protected:
   QPixmap ic_turn_signal_l;
   QPixmap ic_turn_signal_r;
   QPixmap ic_satellite;
+  QPixmap ic_bsd_l;//bsd
+  QPixmap ic_bsd_r;//bsd
 
   QMap<QString, QPixmap> ic_oil_com;
 
@@ -84,6 +86,9 @@ protected:
   void drawGpsStatus(QPainter &p);
   void drawDebugText(QPainter &p);
   void drawHud(QPainter &p);
+  void drawCgear(QPainter &p);// 현재기어단수
+  void drawBsd(QPainter &p);// 현재기어단수
+  void drawErpm(QPainter &p);// 현재 엔진 회전수
 
 private:
   QPixmap get_icon_iol_com(const char* key);

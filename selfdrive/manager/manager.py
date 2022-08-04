@@ -39,7 +39,7 @@ def manager_init() -> None:
 
   default_params: List[Tuple[str, Union[str, bytes]]] = [
     ("CompletedTrainingVersion", "0"),
-    ("DisengageOnAccelerator", "0"),
+    ("DisengageOnAccelerator", "1"), # 해제
     ("HasAcceptedTerms", "0"),
     ("OpenpilotEnabledToggle", "1"),
     ("IsMetric", "1"),
@@ -47,18 +47,18 @@ def manager_init() -> None:
     # HKG
     ("LateralControl", "TORQUE"),
     ("UseClusterSpeed", "0"),
-    ("LongControlEnabled", "0"),
+    ("LongControlEnabled", "1"),
     ("MadModeEnabled", "1"),
     ("IsLdwsCar", "0"),
-    ("LaneChangeEnabled", "0"),
+    ("LaneChangeEnabled", "1"),
     ("AutoLaneChangeEnabled", "0"),
 
-    ("SccSmootherSlowOnCurves", "0"),
-    ("SccSmootherSyncGasPressed", "0"),
-    ("StockNaviDecelEnabled", "0"),
-    ("KeepSteeringTurnSignals", "0"),
-    ("HapticFeedbackWhenSpeedCamera", "0"),
-    ("DisableOpFcw", "0"),
+    ("SccSmootherSlowOnCurves", "1"),
+    ("SccSmootherSyncGasPressed", "1"),
+    ("StockNaviDecelEnabled", "1"),
+    ("KeepSteeringTurnSignals", "1"), #방향지시등에도 상시조향 작동
+    ("HapticFeedbackWhenSpeedCamera", "1"), #  NDA 카메라앞 과속시 허드 계기판 경고
+    ("DisableOpFcw", "1"), # 오파에서 만드는 FCW경고 옵션
     ("ShowDebugUI", "0"),
     ("NewRadarInterface", "0"),
     
@@ -69,7 +69,26 @@ def manager_init() -> None:
     ("IsOpenpilotViewEnabled", "0"),
     ("OpkrForceShutdown", "5"),
 
-    ("TenesiSSHLegacy", "1"),  # SSH 공용키 사용 옵션
+    ("AutoSetOpt", "1"), # Auto-resume Cruise Set Speed by JangPoo - 파파
+    ("ShowTpmsUI", "1"), # TPMS 보기 안보기
+    ("ShowCgearUI", "1"), # 기어단수 보기 안보기
+    ("SoundAutoHold", "1"), # 오토홀드음성 듣기 안든기
+    ("SoundBsd", "1"), # BSD 음성 듣기 안든기
+    ("PutPrebuiltOn", "0"), # 프리빌트 온오프
+    ("TenesiCamera", "1"),  # NDA작동시 티맵 카메라 정보에 따른 선택사항
+    ("ShowBsdUI", "1"), # bsd 보기옵션
+    ("ShowBrakeUI", "1"),  # 브레이크 보기옵션
+    ("ShowErpmUI", "1"),  # 엔진Rpm 보기옵션
+    ("T_Debug", "0"),  # tmux a 저장용 옵션
+    ("Zorrobyte", "1"),  # 차로인식 옵션
+    ("Neokiibyte", "1"),  # 차로인식 옵션
+    ("TenesiSSHLegacy", "1"), # SSH 공용키 사용 옵션
+    ("SshEnabled", "1"), # SSH 공용키 사용 옵션
+    ("Steer_90D", "0"),  # 90도 이상시 에러나는 경우
+    ("Steer_Tune", "1"),  # 90도 이상시 에러나는 경우
+    ("Sound_Slow", "1"),  # TAMP자동감속 음성 듣기 안든기
+    ("Sound_Start", "1"),  # 펭수 시작음성 듣기 안든기
+    ("Steer_409", "1"), #펭수 시작음성 듣기 안든기
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

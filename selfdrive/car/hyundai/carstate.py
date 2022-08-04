@@ -6,6 +6,7 @@ from opendbc.can.parser import CANParser
 from opendbc.can.can_define import CANDefine
 from common.conversions import Conversions as CV
 from common.params import Params
+import sys # dbc모니터링 저장용
 
 GearShifter = car.CarState.GearShifter
 
@@ -14,14 +15,14 @@ class CarState(CarStateBase):
   def __init__(self, CP):
     super().__init__(CP)
 
-    can_define = CANDefine(DBC[CP.carFingerprint]["pt"])
+    can_define = CANDefine(DBC[CP.carFingerprint]["pt"]) # 교주사마 현재기어 등등
 
     if self.CP.carFingerprint in FEATURES["use_cluster_gears"]:
       self.shifter_values = can_define.dv["CLU15"]["CF_Clu_Gear"]
     elif self.CP.carFingerprint in FEATURES["use_tcu_gears"]:
       self.shifter_values = can_define.dv["TCU12"]["CUR_GR"]
     else:  # preferred and elect gear methods use same definition
-      self.shifter_values = can_define.dv["LVR12"]["CF_Lvr_Gear"]
+      self.shifter_values = can_define.dv["LVR12"]["CF_Lvr_Gear"]  # 교주사마 현재기어 등등
 
     #Auto detection for setup
     self.no_radar = CP.sccBus == -1
@@ -48,8 +49,14 @@ class CarState(CarStateBase):
     self.cruiseState_enabled = False
     self.cruiseState_speed = 0
 
+    # Auto-resume Cruise Set Speed by JangPoo - 파파
+    self.prev_cruiseState_speed = 0
+    self.obj_valid = 0
+    # Auto-resume Cruise Set Speed by JangPoo - 파파
+
     self.use_cluster_speed = Params().get_bool('UseClusterSpeed')
     self.long_control_enabled = Params().get_bool('LongControlEnabled')
+    #self.gear_Shifter = GearShifter.unknown  # 기어레버 특수한 환경용
 
   def update(self, cp, cp2, cp_cam):
     cp_mdps = cp2 if self.mdps_bus else cp
@@ -106,8 +113,8 @@ class CarState(CarStateBase):
 
     ret.standstill = ret.vEgoRaw < 0.01
 
-    ret.steeringAngleDeg = cp_sas.vl["SAS11"]["SAS_Angle"]
-    ret.steeringRateDeg = cp_sas.vl["SAS11"]["SAS_Speed"]
+    ret.steeringAngleDeg = cp_sas.vl["SAS11"]["SAS_Angle"] # 0x2B0 MDPS 정보관련
+    ret.steeringRateDeg = cp_sas.vl["SAS11"]["SAS_Speed"] # 0x220 ESP 스마트크루즈관련등등 여러가지 정보
     ret.yawRate = cp.vl["ESP12"]["YAW_RATE"]
     ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_lamp(50, cp.vl["CGW1"]["CF_Gway_TurnSigLh"],
                                                             cp.vl["CGW1"]["CF_Gway_TurnSigRh"])
@@ -120,10 +127,11 @@ class CarState(CarStateBase):
     else:
       self.mdps_error_cnt = 0
 
-    ret.steerFaultTemporary = self.mdps_error_cnt > 50
+    ret.steerFaultTemporary = self.mdps_error_cnt > 256 # 테네시50쓰다가 줄임 220420일자
 
-    if self.CP.enableAutoHold:
+    if self.CP.enableAutoHold: # 교주님 추가한 오토홀드 메시지 UI화면에서 표시용
       ret.autoHold = cp.vl["ESP11"]["AVH_STAT"]
+      self.brakeHold = (cp.vl["ESP11"]["AVH_STAT"] == 1) # 오토홀드 음성지원용 변수
 
     # cruise state
     ret.cruiseState.enabled = (cp_scc.vl["SCC12"]["ACCMode"] != 0) if not self.no_radar else \
@@ -163,29 +171,45 @@ class CarState(CarStateBase):
       ret.gas = cp.vl["EMS12"]["PV_AV_CAN"] / 100.
       ret.gasPressed = bool(cp.vl["EMS16"]["CF_Ems_AclAct"])
 
+    NOT_GEAR = [CAR.KONA_EV, CAR.NIRO_EV, CAR.IONIQ_EV_2020]
+# 테네시 현재기어단수 적용
+    if not self.car_fingerprint in NOT_GEAR : # 현재 기어 단수를 표시하기 위한 작업
+      ret.currentGear = cp.vl["LVR11"]["CF_Lvr_GearInf"] # 핑거 870 내용교체함 CF_Lvr_CGear
+      ret.currentErpm = cp.vl["EMS_366"]["ENG_RPM"]
+      if self.car_fingerprint in [CAR.GENESIS_G70] :
+        ret.currentGear = cp.vl["LVR11"]["G70_Gear"]
+
     # TODO: refactor gear parsing in function
     # Gear Selection via Cluster - For those Kia/Hyundai which are not fully discovered, we can use the Cluster Indicator for Gear Selection,
     # as this seems to be standard over all cars, but is not the preferred method.
     if self.CP.carFingerprint in FEATURES["use_cluster_gears"]:
+      #disp = cp.vl["CLU15"] # 0x52A 계기판 정보에서 기어 레버정보가 나올때
+      #print(gear_disp)
       gear = cp.vl["CLU15"]["CF_Clu_Gear"]
     elif self.CP.carFingerprint in FEATURES["use_tcu_gears"]:
+      #gear_disp = cp.vl["TCU12"]
+      #print(gear_disp)
       gear = cp.vl["TCU12"]["CUR_GR"]
     elif self.CP.carFingerprint in FEATURES["use_elect_gears"]:
+      #gear_disp = cp.vl["ELECT_GEAR"]
+      #print(gear_disp)
       gear = cp.vl["ELECT_GEAR"]["Elect_Gear_Shifter"]
     else:
+      #gear_disp = cp.vl["LVR12"] # 0x367 871계기판과 TCU 정보교환데이터가 있을때
+      #print(gear_disp)
       gear = cp.vl["LVR12"]["CF_Lvr_Gear"]
 
     ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(gear))
 
     if self.CP.carFingerprint in FEATURES["use_fca"]:
-      ret.stockAeb = cp.vl["FCA11"]["FCA_CmdAct"] != 0
+      ret.stockAeb = cp.vl["FCA11"]["FCA_CmdAct"] != 0 # 0xFCA
       ret.stockFcw = cp.vl["FCA11"]["CF_VSM_Warn"] == 2
     else:
       ret.stockAeb = cp.vl["SCC12"]["AEB_CmdAct"] != 0
       ret.stockFcw = cp.vl["SCC12"]["CF_VSM_Warn"] == 2
 
     # Blind Spot Detection and Lane Change Assist signals
-    if self.CP.enableBsm:
+    if self.CP.enableBsm: # 0x58B 후측방 관련 정보들
       ret.leftBlindspot = cp.vl["LCA11"]["CF_Lca_IndLeft"] != 0
       ret.rightBlindspot = cp.vl["LCA11"]["CF_Lca_IndRight"] != 0
     else:
@@ -193,7 +217,7 @@ class CarState(CarStateBase):
       ret.rightBlindspot = False
 
     # save the entire LKAS11, CLU11, SCC12 and MDPS12
-    self.lkas11 = cp_cam.vl["LKAS11"]
+    self.lkas11 = cp_cam.vl["LKAS11"] # 0x340 후측방 관련 정보들
     self.clu11 = cp.vl["CLU11"]
     self.scc11 = cp_scc.vl["SCC11"]
     self.scc12 = cp_scc.vl["SCC12"]
@@ -205,7 +229,7 @@ class CarState(CarStateBase):
 
     self.lead_distance = cp_scc.vl["SCC11"]["ACC_ObjDist"] if not self.no_radar else 0
     if self.has_scc13:
-      self.scc13 = cp_scc.vl["SCC13"]
+      self.scc13 = cp_scc.vl["SCC13"] # SCC 전방레이더 정보
     if self.has_scc14:
       self.scc14 = cp_scc.vl["SCC14"]
 
@@ -226,6 +250,77 @@ class CarState(CarStateBase):
     ret.tpms.rl = tpms_unit * cp.vl["TPMS11"]["PRESSURE_RL"]
     ret.tpms.rr = tpms_unit * cp.vl["TPMS11"]["PRESSURE_RR"]
 
+    # Auto-resume Cruise Set Speed by JangPoo - 파파
+    self.prev_cruiseState_speed = self.cruiseState_speed if self.cruiseState_speed else self.prev_cruiseState_speed
+    self.obj_valid = cp_scc.vl["SCC11"]['ObjValid']
+
+    if self.prev_cruise_buttons == 4: #cancle
+      self.prev_cruiseState_speed = 0 # 여기까지....
+    # Auto-resume Cruise Set Speed by JangPoo - 파파
+
+    if Params().get_bool('T_Debug'): # 테네시 음성관련
+      sys.stdout = open('/data/media/0/tenesilog.txt', 'a') #  화일에 저장시 필요
+
+    #can_lkas11 = cp_cam.vl["LKAS11"]  # MDPS12 데이터를 본다..
+    #print(can_lkas11)
+    can_mdps11 = cp_mdps.vl["MDPS11"]  # MDPS12 데이터를 본다..
+    print(can_mdps11)
+    can_mdps12 = cp_mdps.vl["MDPS12"]  # MDPS12 데이터를 본다..
+    print(can_mdps12)
+    #can_sas11 = cp_sas.vl["SAS11"] # 0x2B0 MDPS 정보관련
+    #print(can_sas11)
+    #can_navi11 = cp_sas.vl["NAVI"] # 0x2B0 MDPS 정보관련
+    #print(can_navi11)
+    #can_scc11 = cp_sas.vl["SCC11"] # 0x2B0 MDPS 정보관련
+    #print(can_scc11)
+
+    return ret
+
+  def update_hda2(self, cp, cp_cam):
+    ret = car.CarState.new_message()
+
+    ret.gas = cp.vl["ACCELERATOR"]["ACCELERATOR_PEDAL"] / 255.
+    ret.gasPressed = ret.gas > 1e-3
+    ret.brakePressed = cp.vl["BRAKE"]["BRAKE_PRESSED"] == 1
+
+    ret.doorOpen = cp.vl["DOORS_SEATBELTS"]["DRIVER_DOOR_OPEN"] == 1
+    ret.seatbeltUnlatched = cp.vl["DOORS_SEATBELTS"]["DRIVER_SEATBELT_LATCHED"] == 0
+
+    gear = cp.vl["ACCELERATOR"]["GEAR"]
+    ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(gear))
+
+    # TODO: figure out positions
+    ret.wheelSpeeds = self.get_wheel_speeds(
+      cp.vl["WHEEL_SPEEDS"]["WHEEL_SPEED_1"],
+      cp.vl["WHEEL_SPEEDS"]["WHEEL_SPEED_2"],
+      cp.vl["WHEEL_SPEEDS"]["WHEEL_SPEED_3"],
+      cp.vl["WHEEL_SPEEDS"]["WHEEL_SPEED_4"],
+    )
+    ret.vEgoRaw = (ret.wheelSpeeds.fl + ret.wheelSpeeds.fr + ret.wheelSpeeds.rl + ret.wheelSpeeds.rr) / 4.
+    ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
+    ret.standstill = ret.vEgoRaw < 0.1
+
+    ret.steeringRateDeg = cp.vl["STEERING_SENSORS"]["STEERING_RATE"]
+    ret.steeringAngleDeg = cp.vl["STEERING_SENSORS"]["STEERING_ANGLE"] * -1
+    ret.steeringTorque = cp.vl["MDPS"]["STEERING_COL_TORQUE"]
+    ret.steeringTorqueEps = cp.vl["MDPS"]["STEERING_OUT_TORQUE"]
+    ret.steeringPressed = abs(ret.steeringTorque) > self.params.STEER_THRESHOLD
+
+    ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_lamp(50, cp.vl["BLINKERS"]["LEFT_LAMP"],
+                                                                      cp.vl["BLINKERS"]["RIGHT_LAMP"])
+
+    ret.cruiseState.available = True
+    ret.cruiseState.enabled = cp.vl["SCC1"]["CRUISE_ACTIVE"] == 1
+    ret.cruiseState.standstill = cp.vl["CRUISE_INFO"]["CRUISE_STANDSTILL"] == 1
+
+    speed_factor = CV.MPH_TO_MS if cp.vl["CLUSTER_INFO"]["DISTANCE_UNIT"] == 1 else CV.KPH_TO_MS
+    ret.cruiseState.speed = cp.vl["CRUISE_INFO"]["SET_SPEED"] * speed_factor
+
+    self.cruise_buttons.extend(cp.vl_all["CRUISE_BUTTONS"]["CRUISE_BUTTONS"])
+    self.main_buttons.extend(cp.vl_all["CRUISE_BUTTONS"]["ADAPTIVE_CRUISE_MAIN_BTN"])
+    self.buttons_counter = cp.vl["CRUISE_BUTTONS"]["COUNTER"]
+
+    self.cam_0x2a4 = copy.copy(cp_cam.vl["CAM_0x2a4"])
     return ret
 
   @staticmethod
@@ -233,27 +328,27 @@ class CarState(CarStateBase):
 
     signals = [
       # sig_name, sig_address
-      ("WHL_SPD_FL", "WHL_SPD11"),
+      ("WHL_SPD_FL", "WHL_SPD11"), # 0x386  ABS모듈에서 읽는다..
       ("WHL_SPD_FR", "WHL_SPD11"),
       ("WHL_SPD_RL", "WHL_SPD11"),
       ("WHL_SPD_RR", "WHL_SPD11"),
 
-      ("YAW_RATE", "ESP12"),
+      ("YAW_RATE", "ESP12"), # 0x220 롱컨트롤 악셀값등등-G센서 가속도값? 경사로 하향주행시 속도 유지장치
 
       ("CF_Gway_DrvSeatBeltInd", "CGW4"),
 
-      ("CF_Gway_DrvSeatBeltSw", "CGW1"),
+      ("CF_Gway_DrvSeatBeltSw", "CGW1"), # 0x541 BCM에서 나오는 신호를 체크 안전벨트 체크
       ("CF_Gway_DrvDrSw", "CGW1"),       # Driver Door
       ("CF_Gway_AstDrSw", "CGW1"),       # Passenger door
-      ("CF_Gway_RLDrSw", "CGW2"),        # Rear reft door
+      ("CF_Gway_RLDrSw", "CGW2"),        # Rear reft door 0x553 2열 도어 신호
       ("CF_Gway_RRDrSw", "CGW2"),        # Rear right door
       ("CF_Gway_TurnSigLh", "CGW1"),
       ("CF_Gway_TurnSigRh", "CGW1"),
       ("CF_Gway_ParkBrakeSw", "CGW1"),   # Parking Brake
 
-      ("CYL_PRES", "ESP12"),
+      ("CYL_PRES", "ESP12"), # 0x220 롱컨트롤 악셀값등등 사용자 브레이킹 압력?
 
-      ("CF_Clu_CruiseSwState", "CLU11"),
+      ("CF_Clu_CruiseSwState", "CLU11"), # 0x4f1 계기판정보 보기
       ("CF_Clu_CruiseSwMain", "CLU11"),
       ("CF_Clu_SldMainSW", "CLU11"),
       ("CF_Clu_ParityBit1", "CLU11"),
@@ -266,7 +361,7 @@ class CarState(CarStateBase):
       ("CF_Clu_AmpInfo", "CLU11"),
       ("CF_Clu_AliveCnt1", "CLU11"),
 
-      ("ACCEnable", "TCS13"),
+      ("ACCEnable", "TCS13"), #0x394 브레이크등이 들어오는 신호등등
       ("BrakeLight", "TCS13"),
       ("aBasis", "TCS13"),
       ("DriverBraking", "TCS13"),
@@ -274,15 +369,18 @@ class CarState(CarStateBase):
       ("DriverOverride", "TCS13"),
       ("CF_VSM_Avail", "TCS13"),
 
-      ("ESC_Off_Step", "TCS15"),
+      ("ESC_Off_Step", "TCS15"), #0x507
       ("AVH_LAMP", "TCS15"),
 
-      #("CF_Lvr_GearInf", "LVR11"),        # Transmission Gear (0 = N or P, 1-8 = Fwd, 14 = Rev)
+      ("CF_Lvr_GearInf", "LVR11"), # 테네시 추가 0x368 기어레버위치 확인용 (0 = N or P, 1-8 = Fwd, 14 = Rev) # 테네시 추가 0x368 tcu주행기어단수
+      ("AVH_STAT", "ESP11"),  # 테네시  추가 0x47F 오토홀드작동 확인데이터용등 - 교주님도 추가함
+      ("G70_Gear", "LVR11"),  # 테네시 추가 0x368 기어레버위치 확인용 (0 = N or P, 1-8 = Fwd, 14 = Rev) # 테네시 추가 0x368 tcu주행기어단수
+      ("ENG_RPM", "EMS_366"), # 테네시 추가 엔진RPM 모니터링
 
-      ("MainMode_ACC", "SCC11"),
+      ("MainMode_ACC", "SCC11"), #0x420 SCC11 전방레이더
       ("SCCInfoDisplay", "SCC11"),
       ("AliveCounterACC", "SCC11"),
-      ("VSetDis", "SCC11"),
+      ("VSetDis", "SCC11"), # 최소 크루즈작동속도 30에서 교체해봄
       ("ObjValid", "SCC11"),
       ("DriverAlertDisplay", "SCC11"),
       ("TauGapSet", "SCC11"),
@@ -295,7 +393,7 @@ class CarState(CarStateBase):
       ("Navi_SCC_Camera_Act", "SCC11"),
       ("Navi_SCC_Camera_Status", "SCC11"),
 
-      ("ACCMode", "SCC12"),
+      ("ACCMode", "SCC12"), #0x421 SCC12 전방레이더
       ("CF_VSM_Prefill", "SCC12"),
       ("CF_VSM_DecCmdAct", "SCC12"),
       ("CF_VSM_HBACmd", "SCC12"),
@@ -317,11 +415,11 @@ class CarState(CarStateBase):
       ("CR_VSM_Alive", "SCC12"),
       ("CR_VSM_ChkSum", "SCC12"),
 
-      ("SCCDrvModeRValue", "SCC13"),
+      ("SCCDrvModeRValue", "SCC13"), #0x50A
       ("SCC_Equip", "SCC13"),
       ("AebDrvSetStatus", "SCC13"),
 
-      ("JerkUpperLimit", "SCC14"),
+      ("JerkUpperLimit", "SCC14"), #0x389
       ("JerkLowerLimit", "SCC14"),
       ("SCCMode2", "SCC14"),
       ("ComfortBandUpper", "SCC14"),
@@ -335,15 +433,15 @@ class CarState(CarStateBase):
     ]
 
     checks = [
-      # address, frequency
-      ("TCS13", 50),
-      ("TCS15", 10),
-      ("CLU11", 50),
-      ("ESP12", 100),
-      ("CGW1", 10),
-      ("CGW2", 5),
-      ("CGW4", 5),
-      ("WHL_SPD11", 50),
+      # address, frequency DBC정의된 것에 의한 작동
+      ("TCS13", 50),  # 0d916 0x394
+      ("TCS15", 10),  # 0d1287 0x507
+      ("CLU11", 50),  # 0d1265 0x4F1
+      ("ESP12", 100),  # 0d544 0x220
+      ("CGW1", 10),  # 0d1345 0x541
+      ("CGW2", 5), # 0d1363 0x553
+      ("CGW4", 5),  # 0d1369 0x559
+      ("WHL_SPD11", 50),  # 0d902 0x389
     ]
 
     if CP.sccBus == 0 and CP.pcmCruise:
@@ -351,9 +449,9 @@ class CarState(CarStateBase):
         ("SCC11", 50),
         ("SCC12", 50),
       ]
-    if CP.mdpsBus == 0:
+    if CP.mdpsBus == 0: # 저속개조가 아닌 상태라면..
       signals += [
-        ("CR_Mdps_StrColTq", "MDPS12"),
+        ("CR_Mdps_StrColTq", "MDPS12"), #0x251 mdps관련신호 보내기
         ("CF_Mdps_Def", "MDPS12"),
         ("CF_Mdps_ToiActive", "MDPS12"),
         ("CF_Mdps_ToiUnavail", "MDPS12"),
@@ -366,36 +464,36 @@ class CarState(CarStateBase):
         ("CR_Mdps_OutTq", "MDPS12")
       ]
       checks += [
-        ("MDPS12", 50)
+        ("MDPS12", 50) # GDS 장비의 점검에서 점검시간에서 작동시 40ms시간으로 검사한다를 참조함..
       ]
     if CP.sasBus == 0:
       signals += [
-        ("SAS_Angle", "SAS11"),
+        ("SAS_Angle", "SAS11"), #0x2B0 자동주차기능
         ("SAS_Speed", "SAS11"),
       ]
       checks += [
         ("SAS11", 100)
       ]
-    if CP.sccBus == -1:
+    if CP.sccBus == -1: # SCC가 없는차라면...
       signals += [
-        ("CRUISE_LAMP_M", "EMS16"),
-        ("CF_Lvr_CruiseSet", "LVR12"),
+        ("CRUISE_LAMP_M", "EMS16"), #0x260 의 크루즈정보를 이용한다..
+        ("CF_Lvr_CruiseSet", "LVR12"), #0x367의 TCU정보이용
     ]
-    if CP.carFingerprint in FEATURES["use_cluster_gears"]:
+    if CP.carFingerprint in FEATURES["use_cluster_gears"]: # 계기판의 기어정보로 인식하는 차량
       signals += [
         ("CF_Clu_Gear", "CLU15"),
       ]
-    elif CP.carFingerprint in FEATURES["use_tcu_gears"]:
+    elif CP.carFingerprint in FEATURES["use_tcu_gears"]: # TCU의 기어레버정보등을 이용하는 경우
       signals += [
-        ("CUR_GR", "TCU12"),
+        ("CUR_GR", "TCU12"), #0x112 TCU의 기어정보를 얻는다..
       ]
-    elif CP.carFingerprint in FEATURES["use_elect_gears"]:
+    elif CP.carFingerprint in FEATURES["use_elect_gears"]: # 전자식기어 차량정보를 이용하는 경우
       signals += [
-        ("Elect_Gear_Shifter", "ELECT_GEAR"),
+        ("Elect_Gear_Shifter", "ELECT_GEAR"), #0x372 기어레버모듈 정보
     ]
     else:
       signals += [
-        ("CF_Lvr_Gear","LVR12"),
+        ("CF_Lvr_Gear","LVR12"), # 기어레버의 정의가 없는 차량은 LVR12정보를 사용한다..
       ]
 
     if CP.carFingerprint in EV_HYBRID_CAR:
@@ -413,8 +511,8 @@ class CarState(CarStateBase):
 
     else:
       signals += [
-        ("PV_AV_CAN", "EMS12"),
-        ("CF_Ems_AclAct", "EMS16"),
+        ("PV_AV_CAN", "EMS12"), #0x329에서 브레이크스위치정보등을 읽을수 잇다..무슨정보지?
+        ("CF_Ems_AclAct", "EMS16"), #0x52A에서 scc에서 나오는 정보를 얻는다..
       ]
       checks += [
         ("EMS12", 100),
@@ -423,7 +521,7 @@ class CarState(CarStateBase):
 
     if CP.carFingerprint in FEATURES["use_fca"]:
       signals += [
-        ("FCA_CmdAct", "FCA11"),
+        ("FCA_CmdAct", "FCA11"), #0x38D FCA11정보를 얻는데
         ("CF_VSM_Warn", "FCA11"),
       ]
 
@@ -435,15 +533,15 @@ class CarState(CarStateBase):
 
     if CP.enableBsm:
       signals += [
-        ("CF_Lca_IndLeft", "LCA11"),
+        ("CF_Lca_IndLeft", "LCA11"), #0x58B LCA정보...측후방같은 정보
         ("CF_Lca_IndRight", "LCA11"),
       ]
       checks += [("LCA11", 50)]
 
     if CP.enableAutoHold:
       signals += [
-        ("AVH_STAT", "ESP11"),
-        ("LDM_STAT", "ESP11"),
+        ("AVH_STAT", "ESP11"),  # 교주님 오토홀드 기본 추가
+        ("LDM_STAT", "ESP11"),  # HDA정보등
       ]
       checks += [("ESP11", 50)]
 
@@ -453,9 +551,9 @@ class CarState(CarStateBase):
   def get_can2_parser(CP):
     signals = []
     checks = []
-    if CP.mdpsBus == 1:
+    if CP.mdpsBus == 1: # MDPS가 저속개조 상태라면
       signals += [
-        ("CR_Mdps_StrColTq", "MDPS12"),
+        ("CR_Mdps_StrColTq", "MDPS12"), #0x251의 정보르를 읽는다..
         ("CF_Mdps_Def", "MDPS12"),
         ("CF_Mdps_ToiActive", "MDPS12"),
         ("CF_Mdps_ToiUnavail", "MDPS12"),
@@ -479,7 +577,7 @@ class CarState(CarStateBase):
       checks += [
         ("SAS11", 100)
       ]
-    if CP.sccBus == 1:
+    if CP.sccBus == 1: # 버스가 1인 경우...판다종류에 따라?
       signals += [
         ("MainMode_ACC", "SCC11"),
         ("SCCInfoDisplay", "SCC11"),
@@ -564,7 +662,7 @@ class CarState(CarStateBase):
     checks = [
       ("LKAS11", 100)
     ]
-    if CP.sccBus == 2:
+    if CP.sccBus == 2: # 풀컨트롤 개조상태
       signals += [
         ("MainMode_ACC", "SCC11"),
         ("SCCInfoDisplay", "SCC11"),

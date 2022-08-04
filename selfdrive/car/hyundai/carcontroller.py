@@ -1,5 +1,5 @@
 from random import randint
-
+import time # 테네시 추가
 from cereal import car
 from common.realtime import DT_CTRL
 from common.numpy_fast import clip, interp
@@ -22,14 +22,14 @@ def process_hud_alert(enabled, fingerprint, hud_control):
 
   sys_warning = (hud_control.visualAlert in (VisualAlert.steerRequired, VisualAlert.ldw))
 
-  # initialize to no line visible
-  sys_state = 1
+  # initialize to no line visible - 차로인식 관련 허드상에서 표시
+  sys_state = 1 # 기본 수치는 1이다, 좌측차선인식 그리고 우측차선인식 그런데 실질 0x값에서는 0x4가 되고 그래서 0x2와 더해서 lkas대기는 0x6이 된다..
   if hud_control.leftLaneVisible and hud_control.rightLaneVisible or sys_warning:  # HUD alert only display when LKAS status is active
-    sys_state = 3 if enabled or sys_warning else 4
+    sys_state = 3 if enabled or sys_warning else 4 # 3이면 0x0c이고 양쪽차로인식상태 + 0x02 0x0E이 나온다.LKAS작동기준,제네시스 DH기준 4는 0x12
   elif hud_control.leftLaneVisible:
-    sys_state = 5
+    sys_state = 5 # 좌측차로인식 5이면 0x14 + 0x02 0x16이 나온다. 제네시스 DH기준
   elif hud_control.rightLaneVisible:
-    sys_state = 6
+    sys_state = 6 # 우측차로인식 6이면 0x18 + 0x02 0x1A이 나온다. 제네시스 DH기준
 
   # initialize to no warnings
   left_lane_warning = 0
@@ -72,8 +72,11 @@ class CarController:
     self.keep_steering_turn_signals = param.get_bool('KeepSteeringTurnSignals')
     self.haptic_feedback_speed_camera = param.get_bool('HapticFeedbackWhenSpeedCamera')
 
+    self.tenesi_camera = Params().get_bool('TenesiCamera')  # NDA작동시 티맵 카메라 정보에 따른 선택사항
+    self.lane_blink_on = False # NDA가 카메라 인식후 차로를 깜빡이게 하기
+
     self.scc_smoother = SccSmoother()
-    self.last_blinker_frame = 0
+    self.last_blinker_frame = 0 # NDA가 카메라 인식후 차로를 깜빡이게 하기
     self.prev_active_cam = False
     self.active_cam_timer = 0
     self.last_active_cam_frame = 0
@@ -154,6 +157,14 @@ class CarController:
         cut_steer_temp = True
         self.angle_limit_counter = 0
         self.cut_steer_frames += 1
+
+    if self.tenesi_camera:
+      if self.scc_smoother.active_cam: # NDA가 카메라 인식후 차로를 깜빡이게 하기
+        if self.frame % 50 == 0:
+          self.lane_blink_on = not self.lane_blink_on
+        left_lane_warning = right_lane_warning = 1 # 1을 넣으면 핸들진동 기능과 함께 깜빡임이 된다.. 2는 차로 소리가 나온다.(계기판 동시) 3은 허드에서만 표시가 나온다..
+      else:
+        self.lane_blink_on = False # NDA가 카메라 인식후 차로를 깜빡이게 하기
 
     can_sends = []
     can_sends.append(create_lkas11(self.packer, self.frame, self.car_fingerprint, apply_steer, lkas_active,

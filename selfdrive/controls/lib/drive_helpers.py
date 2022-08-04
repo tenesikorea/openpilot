@@ -10,7 +10,7 @@ from selfdrive.ntune import ntune_common_get
 # WARNING: this value was determined based on the model's training distribution,
 #          model predictions above this speed can be unpredictable
 # kph
-V_CRUISE_MAX = 145
+V_CRUISE_MAX = 180 # 테네시 수정
 V_CRUISE_MIN = 30
 V_CRUISE_DELTA_MI = 5 * CV.MPH_TO_KPH
 V_CRUISE_DELTA_KM = 10
@@ -22,7 +22,7 @@ CONTROL_N = 17
 CAR_ROTATION_RADIUS = 0.0
 
 # EU guidelines
-MAX_LATERAL_JERK = 5.0
+MAX_LATERAL_JERK = 10.0
 
 ButtonType = car.CarState.ButtonEvent.Type
 CRUISE_LONG_PRESS = 50
@@ -39,7 +39,7 @@ CRUISE_INTERVAL_SIGN = {
 class MPC_COST_LAT:
   PATH = 1.0
   HEADING = 1.0
-  STEER_RATE = 1.0
+  STEER_RATE = 0.4
 
 
 def apply_deadzone(error, deadzone):

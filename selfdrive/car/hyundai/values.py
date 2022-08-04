@@ -1,6 +1,7 @@
 from cereal import car
 from selfdrive.car import dbc_dict
 Ecu = car.CarParams.Ecu
+from common.params import Params
 
 class CarControllerParams:
 
@@ -8,10 +9,17 @@ class CarControllerParams:
   ACCEL_MIN = -3.7
 
   def __init__(self, CP):
-    self.STEER_MAX = 409   # 409 is the max, 384 is stock
-    self.STEER_DELTA_UP = 5
-    self.STEER_DELTA_DOWN = 7
-    self.STEER_DRIVER_ALLOWANCE = 50
+    if CP.carFingerprint in (CAR.GENESIS):
+      self.STEER_MAX = 404 # 384기본 396 테스트 1차 통과 404에러 생겼음..
+    else:
+      self.STEER_MAX = 409
+
+    if Params().get_bool('Steer_409'): # 제네시스 DH 조향토크 409로 만들기 옵션 테스트용
+      self.STEER_MAX = 409 # 제네시스 DH 조향토크 409로 만들기 옵션 테스트용
+
+    self.STEER_DELTA_UP = 3
+    self.STEER_DELTA_DOWN = 6 # 기본값 7을 6으로 교체
+    self.STEER_DRIVER_ALLOWANCE = 30
     self.STEER_DRIVER_MULTIPLIER = 2
     self.STEER_DRIVER_FACTOR = 1
 
@@ -56,7 +64,8 @@ class CAR:
   K5 = "KIA K5 2019 & 2016"
   K5_2021 = "KIA K5 2021"
   K5_HEV = "KIA K5 HYBRID 2017 & SPORTS 2019"
-  SPORTAGE = "KIA SPORTAGE S 2020"  
+  K5_HEV_2022 = "KIA K5 HYBRID 2022"
+  SPORTAGE = "KIA SPORTAGE S 2020"
   SORENTO = "KIA SORENTO GT LINE 2018"
   STINGER = "KIA STINGER GT2 2018"
   NIRO_EV = "KIA NIRO EV 2020 PLATINUM"
@@ -272,6 +281,34 @@ FINGERPRINTS = {
     },{
     68: 8, 127: 8, 304: 8, 320: 8, 339: 8, 352: 8, 356: 4, 544: 8, 576: 8, 593: 8, 688: 5, 881: 8, 882: 8, 897: 8, 902: 8, 903: 8, 909: 8, 912: 7, 916: 8, 1040: 8, 1056: 8, 1057: 8, 1078: 4, 1136: 6, 1151: 6, 1168: 7, 1173: 8, 1180: 8, 1186: 2, 1191: 2, 1265: 4, 1268: 8, 1280: 1, 1287: 4, 1290: 8, 1291: 8, 1292: 8, 1294: 8, 1312: 8, 1322: 8, 1342: 6, 1345: 8, 1348: 8, 1355: 8, 1363: 8, 1369: 8, 1371: 8, 1407: 8, 1419: 8, 1420: 8, 1425: 2, 1427: 6, 1429: 8, 1430: 8, 1448: 8, 1456: 4, 1470: 8, 1476: 8, 1535: 8
   }],
+  CAR.K5_HEV_2022: [{
+    127: 8, 304: 8, 320: 8, 339: 8, 352: 8, 356: 4, 516: 8, 544: 8, 576: 8, 593: 8, 688: 6, 757: 2, 832: 8, 865: 8,
+    881: 8, 882: 8, 897: 8, 902: 8, 903: 8, 905: 8, 908: 8, 909: 8, 912: 7, 913: 8, 916: 8, 919: 8, 1027: 8, 1028: 8,
+    1040: 8, 1042: 8, 1053: 8, 1054: 8, 1055: 8, 1056: 8, 1057: 8, 1078: 4, 1096: 8, 1102: 8, 1108: 8, 1114: 8, 1136: 6,
+    1138: 5, 1151: 8, 1155: 8, 1156: 8, 1157: 4, 1162: 8, 1164: 8, 1168: 8, 1173: 8, 1180: 8, 1184: 8, 1186: 2, 1191: 2,
+    1193: 8, 1210: 8, 1225: 8, 1227: 8, 1265: 4, 1268: 8, 1280: 8, 1287: 4, 1290: 8, 1291: 8, 1292: 8, 1294: 8, 1312: 8,
+    1322: 8, 1330: 8, 1339: 8, 1342: 8, 1343: 8, 1345: 8, 1348: 8, 1355: 8, 1363: 8, 1369: 8, 1370: 8, 1371: 8, 1378: 8,
+    1379: 8, 1407: 8, 1419: 8, 1427: 6, 1429: 8, 1430: 8, 1446: 8, 1448: 8, 1456: 4, 1460: 8, 1470: 8, 1476: 8, 1485: 8,
+    1504: 3, 1535: 8
+  }, {
+    127: 8, 304: 8, 320: 8, 339: 8, 352: 8, 356: 4, 516: 8, 544: 8, 576: 8, 593: 8, 688: 6, 757: 2, 832: 8, 865: 8,
+    881: 8, 882: 8, 897: 8, 902: 8, 903: 8, 905: 8, 908: 8, 909: 8, 912: 7, 913: 8, 916: 8, 919: 8, 1027: 8, 1028: 8,
+    1040: 8, 1042: 8, 1053: 8, 1054: 8, 1055: 8, 1056: 8, 1057: 8, 1078: 4, 1096: 8, 1102: 8, 1108: 8, 1114: 8, 1136: 6,
+    1138: 5, 1151: 8, 1155: 8, 1156: 8, 1157: 4, 1162: 8, 1164: 8, 1168: 8, 1173: 8, 1180: 8, 1184: 8, 1186: 2, 1191: 2,
+    1193: 8, 1210: 8, 1225: 8, 1227: 8, 1265: 4, 1268: 8, 1280: 8, 1287: 4, 1290: 8, 1291: 8, 1292: 8, 1294: 8, 1312: 8,
+    1322: 8, 1330: 8, 1339: 8, 1342: 8, 1343: 8, 1345: 8, 1348: 8, 1355: 8, 1363: 8, 1369: 8, 1370: 8, 1371: 8, 1378: 8,
+    1379: 8, 1407: 8, 1419: 8, 1427: 6, 1429: 8, 1430: 8, 1446: 8, 1448: 8, 1456: 4, 1460: 8, 1470: 8, 1476: 8, 1485: 8,
+    1504: 3, 1535: 8, 2000: 8, 2004: 8, 2008: 8, 2012: 8
+  }, {
+    127: 8, 304: 8, 320: 8, 339: 8, 352: 8, 356: 4, 516: 8, 544: 8, 576: 8, 593: 8, 688: 6, 757: 2, 832: 8, 865: 8,
+    881: 8, 882: 8, 897: 8, 902: 8, 903: 8, 905: 8, 908: 8, 909: 8, 912: 7, 913: 8, 916: 8, 919: 8, 1027: 8, 1028: 8,
+    1040: 8, 1042: 8, 1053: 8, 1054: 8, 1055: 8, 1056: 8, 1057: 8, 1078: 4, 1096: 8, 1102: 8, 1108: 8, 1114: 8, 1136: 6,
+    1138: 5, 1151: 8, 1155: 8, 1156: 8, 1157: 4, 1162: 8, 1164: 8, 1168: 8, 1173: 8, 1180: 8, 1184: 8, 1186: 2, 1191: 2,
+    1193: 8, 1210: 8, 1225: 8, 1227: 8, 1265: 4, 1268: 8, 1280: 8, 1287: 4, 1290: 8, 1291: 8, 1292: 8, 1294: 8, 1312: 8,
+    1322: 8, 1330: 8, 1339: 8, 1342: 8, 1343: 8, 1345: 8, 1348: 8, 1355: 8, 1363: 8, 1369: 8, 1370: 8, 1371: 8, 1378: 8,
+    1379: 8, 1407: 8, 1419: 8, 1427: 6, 1429: 8, 1430: 8, 1446: 8, 1448: 8, 1456: 4, 1460: 8, 1470: 8, 1476: 8, 1485: 8,
+    1504: 3, 1535: 8, 1988: 8, 1996: 8, 2000: 8, 2004: 8, 2008: 8, 2012: 8
+  }],
   CAR.SPORTAGE: [{
     67: 8, 68: 8, 127: 8, 273: 8, 274: 8, 275: 8, 339: 8, 356: 4, 399: 8, 447: 8, 512: 6, 544: 8, 593: 8, 608: 8, 688: 5, 790: 8, 809: 8, 832: 8, 884: 8, 897: 8, 899: 8, 902: 8, 903: 6, 909: 8, 916: 8, 1040: 8, 1078: 4, 1170: 8, 1191: 2, 1253: 8, 1254: 8, 1255: 8, 1265: 4, 1280: 1, 1282: 4, 1287: 4, 1292: 8, 1294: 8, 1312: 8, 1322: 8, 1342: 6, 1345: 8, 1348: 8, 1349: 8, 1351: 8, 1353: 8, 1363: 8, 1365: 8, 1366: 8, 1367: 8, 1369: 8, 1407: 8, 1419: 8, 1427: 6, 1440: 8, 1456: 4, 1470: 8, 1472: 8, 1486: 8, 1487: 8, 1491: 8, 1492: 8, 1530: 8
   }],
@@ -426,7 +463,7 @@ FW_VERSIONS = {
 
 CHECKSUM = {
   "crc8": [CAR.SANTA_FE, CAR.SONATA, CAR.PALISADE, CAR.SONATA_HEV, CAR.SONATA21_HEV, CAR.SELTOS, CAR.ELANTRA_2021,
-           CAR.ELANTRA_HEV_2021, CAR.SANTA_FE_HEV_2022, CAR.K5_2021],
+           CAR.ELANTRA_HEV_2021, CAR.SANTA_FE_HEV_2022, CAR.K5_2021, CAR.K5_HEV_2022],
   "6B": [CAR.SORENTO, CAR.GENESIS, CAR.SANTA_FE_2022],
 }
 
@@ -438,7 +475,7 @@ FEATURES = {
   "use_tcu_gears": {CAR.K5, CAR.SONATA19, CAR.VELOSTER, CAR.SONATA_LF_TURBO, CAR.TUCSON_TL_SCC},
 
   # Use E_GEAR Message for Gear Selection
-  "use_elect_gears": {CAR.K5_HEV, CAR.IONIQ_EV_LTD, CAR.KONA_EV, CAR.KONA_HEV, CAR.SONATA_HEV, CAR.SONATA21_HEV, CAR.SONATA21_HEV, CAR.NIRO_EV, CAR.K7_HEV,
+  "use_elect_gears": {CAR.K5_HEV, CAR.K5_HEV_2022, CAR.IONIQ_EV_LTD, CAR.KONA_EV, CAR.KONA_HEV, CAR.SONATA_HEV, CAR.SONATA21_HEV, CAR.SONATA21_HEV, CAR.NIRO_EV, CAR.K7_HEV,
                       CAR.GRANDEUR_IG_HEV, CAR.GRANDEUR_IG_FL_HEV, CAR.IONIQ_EV_2020, CAR.IONIQ_PHEV, CAR.ELANTRA_HEV_2021,
                       CAR.NIRO_HEV, CAR.NIRO_HEV_2021, CAR.SANTA_FE_HEV_2022},
 
@@ -446,7 +483,7 @@ FEATURES = {
   "send_lfa_mfa": {CAR.SONATA, CAR.PALISADE, CAR.SONATA_HEV, CAR.SONATA21_HEV, CAR.SANTA_FE, CAR.NIRO_EV, CAR.GRANDEUR_IG_FL, CAR.GRANDEUR_IG_FL_HEV,
                    CAR.KONA_EV, CAR.KONA_HEV, CAR.TUCSON_TL_SCC, CAR.ELANTRA_2021, CAR.ELANTRA_HEV_2021,
                    CAR.K9, CAR.GENESIS_G90, CAR.NIRO_HEV_2021, CAR.SANTA_FE_2022, CAR.SANTA_FE_HEV_2022, CAR.K5_2021,
-                   CAR.SELTOS, CAR.MOHAVE},
+                   CAR.SELTOS, CAR.MOHAVE, CAR.K5_HEV_2022},
 
   # these cars use the FCA11 message for the AEB and FCW signals, all others use SCC12
   "use_fca": {CAR.SONATA, CAR.ELANTRA, CAR.ELANTRA_GT_I30, CAR.STINGER, CAR.IONIQ_EV_2020, CAR.IONIQ_PHEV, CAR.KONA, CAR.KONA_EV, CAR.FORTE,
@@ -456,10 +493,12 @@ FEATURES = {
   "has_scc13": {CAR.PALISADE, CAR.NIRO_HEV, CAR.NIRO_HEV_2021, CAR.K9, CAR.GENESIS_G90, CAR.K5_2021, CAR.MOHAVE},
   "has_scc14": {CAR.PALISADE, CAR.NIRO_HEV, CAR.NIRO_HEV_2021, CAR.K9, CAR.GENESIS_G90, CAR.K5_2021, CAR.MOHAVE},
 
-  "send_mdps12": {CAR.K9},
+  "send_mdps12": {CAR.K9, CAR.GENESIS_G90},
+  # HDA 계기판 튜닝
+  "has_hda": {CAR.GENESIS_EQ900, CAR.GENESIS_EQ900_L, CAR.GRANDEUR_IG},  # HDA 아이콘등 파파 튜닝
 }
 
-HYBRID_CAR = {CAR.K5_HEV, CAR.KONA_HEV, CAR.NIRO_HEV, CAR.NIRO_HEV_2021, CAR.SONATA_HEV, CAR.SONATA21_HEV, CAR.SONATA19_HEV, CAR.K7_HEV,
+HYBRID_CAR = {CAR.K5_HEV, CAR.K5_HEV_2022, CAR.KONA_HEV, CAR.NIRO_HEV, CAR.NIRO_HEV_2021, CAR.SONATA_HEV, CAR.SONATA21_HEV, CAR.SONATA19_HEV, CAR.K7_HEV,
               CAR.GRANDEUR_IG_HEV, CAR.GRANDEUR_IG_FL_HEV, CAR.IONIQ_PHEV, CAR.ELANTRA_HEV_2021, CAR.IONIQ,
               CAR.SANTA_FE_HEV_2022}
 
@@ -508,7 +547,8 @@ DBC = {
   CAR.K5: dbc_dict('hyundai_kia_generic', None),
   CAR.K5_2021: dbc_dict('hyundai_kia_generic', None),
   CAR.K5_HEV: dbc_dict('hyundai_kia_generic', None),
-  CAR.SPORTAGE: dbc_dict('hyundai_kia_generic', None),  
+  CAR.K5_HEV_2022: dbc_dict('hyundai_kia_generic', None),
+  CAR.SPORTAGE: dbc_dict('hyundai_kia_generic', None),
   CAR.SORENTO: dbc_dict('hyundai_kia_generic', None),
   CAR.STINGER: dbc_dict('hyundai_kia_generic', None),  
   CAR.NIRO_EV: dbc_dict('hyundai_kia_generic', None),

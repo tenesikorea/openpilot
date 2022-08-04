@@ -204,6 +204,9 @@ void ui_update_params(UIState *s) {
   s->scene.is_metric = params.getBool("IsMetric");
   s->show_debug = params.getBool("ShowDebugUI");
   s->lat_control = std::string(Params().get("LateralControl"));
+  s->show_gear = params.getBool("ShowCgearUI");//현재기어단수표시
+  s->show_bsd = params.getBool("ShowBsdUI");//측후방정보 표시
+  s->show_erpm = params.getBool("ShowErpmUI");//엔진회전수 표시
 }
 
 void UIState::updateStatus() {
