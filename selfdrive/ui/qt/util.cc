@@ -9,7 +9,7 @@
 #include "selfdrive/hardware/hw.h"
 
 QString getVersion() {
-  static QString version =  QString::fromStdString(Params().get("GitCommit"));
+  static QString version =  QString::fromStdString(Params().get("Version"));
   return version;
 }
 

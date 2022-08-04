@@ -1,23 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4788c9f7-0648-4850-9a45-b87ecc7b5c58" name="Changes" comment="C3내용1차적용-문법2">
+    <list default="true" id="4788c9f7-0648-4850-9a45-b87ecc7b5c58" name="Changes" comment="C3내용2차적용-문법수정3">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/home.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/home.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/driverview.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/driverview.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/networking.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/networking.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/onboarding.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/onboarding.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/settings.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/settings.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/onroad.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/onroad.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/sidebar.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/sidebar.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/spinner.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/spinner.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/spinner.h" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/spinner.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/util.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/util.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/drive_stats.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/drive_stats.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/input.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/input.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/offroad_alerts.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/offroad_alerts.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/prime.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/prime.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/ssh_keys.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/ssh_keys.cc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,6 +10,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="PREVIEW_PUSH_PROTECTED_ONLY" value="true" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$" value="TenesiOP_C3" />
@@ -53,7 +39,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "last_opened_file_path": "G:/c2",
     "settings.editor.selected.configurable": "preferences.general",
-    "two.files.diff.last.used.file": "G:/TenesiC3/common/params.cc",
+    "two.files.diff.last.used.file": "G:/TenesiC3/selfdrive/car/hyundai/interface.py",
     "two.files.diff.last.used.folder": "G:/c2"
   }
 }]]></component>
@@ -141,7 +127,42 @@
       <option name="project" value="LOCAL" />
       <updated>1659602794839</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="C3내용2차적용">
+      <created>1659604791652</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1659604791652</updated>
+    </task>
+    <task id="LOCAL-00012" summary="C3내용2차적용-문법수정">
+      <created>1659605365046</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1659605365046</updated>
+    </task>
+    <task id="LOCAL-00013" summary="C3내용2차적용-문법수정2">
+      <created>1659605696089</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1659605696089</updated>
+    </task>
+    <task id="LOCAL-00014" summary="C3내용2차적용-문법수정3">
+      <created>1659605996836</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1659605996836</updated>
+    </task>
+    <task id="LOCAL-00015" summary="C3내용2차적용-문법수정3">
+      <created>1659606506566</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1659606506566</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -177,6 +198,10 @@
     <MESSAGE value="MDPS DTC 삭제버튼" />
     <MESSAGE value="MDPS DTC 삭제버튼-권한부여" />
     <MESSAGE value="C3내용1차적용-문법2" />
-    <option name="LAST_COMMIT_MESSAGE" value="C3내용1차적용-문법2" />
+    <MESSAGE value="C3내용2차적용" />
+    <MESSAGE value="C3내용2차적용-문법수정" />
+    <MESSAGE value="C3내용2차적용-문법수정2" />
+    <MESSAGE value="C3내용2차적용-문법수정3" />
+    <option name="LAST_COMMIT_MESSAGE" value="C3내용2차적용-문법수정3" />
   </component>
 </project>

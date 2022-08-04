@@ -1078,6 +1078,30 @@ TbranchPanel::TbranchPanel(QWidget* parent) : QWidget(parent) {
 TenesiPanel::TenesiPanel(QWidget* parent) : QWidget(parent) {
   QVBoxLayout *layout = new QVBoxLayout(this);
 
+  if (!Hardware::TICI()) { // 001 시작
+    layout->addWidget(horizontal_line()); // 구분선 구간
+    QHBoxLayout *recovery_layout = new QHBoxLayout(); //새로운 버튼 추가를 위한 레이아웃 변수 git_layout
+    recovery_layout->setSpacing(12);
+    QPushButton *twrpBtn = new QPushButton("Twrp 설치"); // 순정리커버리에서 Twrp설치를 한다..
+    twrpBtn->setStyleSheet("height: 120px;border-radius: 15px;background-color: #23481E;");
+    recovery_layout->addWidget(twrpBtn);
+    QObject::connect(twrpBtn, &QPushButton::released, [=]() {
+      if (ConfirmationDialog::confirm("펭펭~ twrp설치를 합니다!\n.펭펭~", this)) {
+        std::system("/data/openpilot/twrp.sh ''");
+      }
+    });
+
+    QPushButton *recoveryBtn = new QPushButton("리커버리로 재부팅");
+    recoveryBtn->setStyleSheet("height: 120px;border-radius: 15px;background-color: #E22C2C;");
+    recovery_layout->addWidget(recoveryBtn);
+    QObject::connect(recoveryBtn, &QPushButton::released, [=]() {
+      if (ConfirmationDialog::confirm("펭펭~ 리커버리로 재부팅 합니다!\n.펭펭~", this)) {
+        std::system("reboot recovery");
+      }
+    });
+    layout->addLayout(recovery_layout); // 기본에 추가한다..
+  } //001 끝
+
   layout->addWidget(horizontal_line()); // 구분선 구간
   layout->addWidget(new ParamControl("Steer_409",
                                             "조향토크 409설정",
