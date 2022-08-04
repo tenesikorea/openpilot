@@ -865,13 +865,13 @@ void NvgWindow::drawSteer(QPainter &p) {
   QString str;
   int width = 192;
 
-  str.sprintf("%.0f°", steer_angle);
+  str.sprintf("%.1f°", steer_angle);
   QRect rect = QRect(x, y, width, width);
 
   p.setPen(QColor(255, 255, 255, 200));
   p.drawText(rect, Qt::AlignCenter, str);
 
-  str.sprintf("%.0f°", desire_angle);
+  str.sprintf("%.1f°", desire_angle);
   rect.setRect(x, y + 80, width, width);
 
   p.setPen(QColor(155, 255, 155, 200));
@@ -1311,7 +1311,7 @@ void NvgWindow::drawBsd(QPainter &p) {
   int car_x_right = center_x + position_x;
 
    car_x_left = 115;
-   car_x_right = 2005;
+   car_x_right = 1765;
 
   const int car_img_size_w = (car_size * 1);
   const int car_img_size_h = (car_size * 1);

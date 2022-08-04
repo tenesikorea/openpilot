@@ -14,7 +14,7 @@ QString getVersion() {
 }
 
 QString getBrand() {
-  return Params().getBool("Passive") ? "dashcam" : "openpilot";
+  return Params().getBool("Passive") ? "CAM" : "NeoKii & Tenesi";
 }
 
 QString getBrandVersion() {
@@ -59,16 +59,16 @@ QString timeAgo(const QDateTime &date) {
 
   QString s;
   if (diff < 60) {
-    s = "now";
+    s = "지금";
   } else if (diff < 60 * 60) {
     int minutes = diff / 60;
-    s = QString("%1 minute%2 ago").arg(minutes).arg(minutes > 1 ? "s" : "");
+    s = QString("%1 분%2 전").arg(minutes).arg(minutes > 1 ? "" : "");
   } else if (diff < 60 * 60 * 24) {
     int hours = diff / (60 * 60);
-    s = QString("%1 hour%2 ago").arg(hours).arg(hours > 1 ? "s" : "");
+    s = QString("%1 시간%2 전").arg(hours).arg(hours > 1 ? "" : "");
   } else if (diff < 3600 * 24 * 7) {
     int days = diff / (60 * 60 * 24);
-    s = QString("%1 day%2 ago").arg(days).arg(days > 1 ? "s" : "");
+    s = QString("%1 일%2 전").arg(days).arg(days > 1 ? "" : "");
   } else {
     s = date.date().toString();
   }

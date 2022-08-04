@@ -225,7 +225,6 @@ struct CarState {
   tpms @44 : Tpms;
   vCluRatio @45 :Float32;
   aBasis @46 :Float32;
-
   # Gear Current By Tenesi
   currentGear @47 :Float32;
   # 엔진rpm

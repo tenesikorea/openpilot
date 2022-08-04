@@ -8,6 +8,7 @@ from common.conversions import Conversions as CV
 from common.realtime import DT_CTRL
 from selfdrive.locationd.calibrationd import MIN_SPEED_FILTER
 from selfdrive.version import get_short_branch
+from common.params import Params
 
 AlertSize = log.ControlsState.AlertSize
 AlertStatus = log.ControlsState.AlertStatus
@@ -601,7 +602,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   },
 
   EventName.outOfSpace: {
-    ET.PERMANENT: out_of_space_alert,
+    ET.PERMANENT: NormalPermanentAlert("Out of Storage"),
     ET.NO_ENTRY: NoEntryAlert("Out of Storage"),
   },
 

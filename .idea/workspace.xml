@@ -1,31 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4788c9f7-0648-4850-9a45-b87ecc7b5c58" name="Changes" comment="기본변수등업데이트-퍼미션조절">
-      <change beforePath="$PROJECT_DIR$/selfdrive/car/car_helpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/car/car_helpers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/car/hyundai/carcontroller.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/car/hyundai/carcontroller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/car/hyundai/carstate.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/car/hyundai/carstate.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/car/hyundai/hyundaican.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/car/hyundai/hyundaican.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/car/hyundai/interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/car/hyundai/interface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/car/hyundai/scc_smoother.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/car/hyundai/scc_smoother.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/car/hyundai/values.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/car/hyundai/values.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/car/interfaces.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/car/interfaces.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/controls/controlsd.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/controls/controlsd.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/controls/lib/alerts_offroad.json" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/controls/lib/alerts_offroad.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/controls/lib/drive_helpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/controls/lib/drive_helpers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/controls/lib/events.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/controls/lib/events.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/controls/lib/lane_planner.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/controls/lib/lane_planner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/controls/lib/latcontrol_torque.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/controls/lib/latcontrol_torque.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/controls/lib/longitudinal_mpc_lib/long_mpc.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/controls/lib/longitudinal_mpc_lib/long_mpc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/loggerd/loggerd.h" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/loggerd/loggerd.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/manager/manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/manager/manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/monitoring/driver_monitor.py" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/monitoring/driver_monitor.py" afterDir="false" />
+    <list default="true" id="4788c9f7-0648-4850-9a45-b87ecc7b5c58" name="Changes" comment="C3내용1차적용-문법2">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/home.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/home.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/driverview.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/driverview.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/networking.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/networking.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/onboarding.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/onboarding.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/settings.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/offroad/settings.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/onroad.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/onroad.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/onroad.h" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/onroad.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/sidebar.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/sidebar.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/spinner.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/spinner.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/spinner.h" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/spinner.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/util.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/util.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/ui.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/ui.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/selfdrive/ui/ui.h" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/ui.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/drive_stats.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/drive_stats.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/input.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/input.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/offroad_alerts.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/offroad_alerts.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/prime.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/prime.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/ssh_keys.cc" beforeDir="false" afterPath="$PROJECT_DIR$/selfdrive/ui/qt/widgets/ssh_keys.cc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,10 +51,10 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "G:/TenesiC3/common/params.cc",
+    "last_opened_file_path": "G:/c2",
     "settings.editor.selected.configurable": "preferences.general",
     "two.files.diff.last.used.file": "G:/TenesiC3/common/params.cc",
-    "two.files.diff.last.used.folder": "G:/TenesiC3"
+    "two.files.diff.last.used.folder": "G:/c2"
   }
 }]]></component>
   <component name="Push.Settings">
@@ -114,7 +106,42 @@
       <option name="project" value="LOCAL" />
       <updated>1659599495419</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="C3내용1차적용">
+      <created>1659602083525</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1659602083525</updated>
+    </task>
+    <task id="LOCAL-00007" summary="C3내용1차적용-문법">
+      <created>1659602483450</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1659602483450</updated>
+    </task>
+    <task id="LOCAL-00008" summary="MDPS DTC 삭제버튼">
+      <created>1659602649346</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1659602649346</updated>
+    </task>
+    <task id="LOCAL-00009" summary="MDPS DTC 삭제버튼-권한부여">
+      <created>1659602704072</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1659602704072</updated>
+    </task>
+    <task id="LOCAL-00010" summary="C3내용1차적용-문법2">
+      <created>1659602794839</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1659602794839</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -145,6 +172,11 @@
     <MESSAGE value="SSH 공용키 업데이트" />
     <MESSAGE value="기본변수등업데이트" />
     <MESSAGE value="기본변수등업데이트-퍼미션조절" />
-    <option name="LAST_COMMIT_MESSAGE" value="기본변수등업데이트-퍼미션조절" />
+    <MESSAGE value="C3내용1차적용" />
+    <MESSAGE value="C3내용1차적용-문법" />
+    <MESSAGE value="MDPS DTC 삭제버튼" />
+    <MESSAGE value="MDPS DTC 삭제버튼-권한부여" />
+    <MESSAGE value="C3내용1차적용-문법2" />
+    <option name="LAST_COMMIT_MESSAGE" value="C3내용1차적용-문법2" />
   </component>
 </project>

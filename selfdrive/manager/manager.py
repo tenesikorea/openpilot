@@ -39,7 +39,7 @@ def manager_init() -> None:
 
   default_params: List[Tuple[str, Union[str, bytes]]] = [
     ("CompletedTrainingVersion", "0"),
-    ("DisengageOnAccelerator", "1"), # 해제
+    ("DisengageOnAccelerator", "0"), # 해제
     ("HasAcceptedTerms", "0"),
     ("OpenpilotEnabledToggle", "1"),
     ("IsMetric", "1"),
@@ -47,7 +47,7 @@ def manager_init() -> None:
     # HKG
     ("LateralControl", "TORQUE"),
     ("UseClusterSpeed", "0"),
-    ("LongControlEnabled", "1"),
+    ("LongControlEnabled", "1"), # 테네시롱컨 기본 사용
     ("MadModeEnabled", "1"),
     ("IsLdwsCar", "0"),
     ("LaneChangeEnabled", "1"),

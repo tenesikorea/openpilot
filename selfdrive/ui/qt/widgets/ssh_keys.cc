@@ -4,16 +4,16 @@
 #include "selfdrive/ui/qt/api.h"
 #include "selfdrive/ui/qt/widgets/input.h"
 
-SshControl::SshControl() : ButtonControl("SSH Keys", "", "Warning: This grants SSH access to all public keys in your GitHub settings. Never enter a GitHub username other than your own. A comma employee will NEVER ask you to add their GitHub username.") {
+SshControl::SshControl() : ButtonControl("SSH 키 설정", "", "경고: 이렇게 하면 GitHub 설정의 모든 공개 키에 대한 SSH 액세스 권한이 부여됩니다. 사용자 이외의 GitHub 사용자 이름을 입력하지 마십시오. 콤마 직원은 절대 GitHub 사용자 이름을 추가하라는 요청을 하지 않습니다.") {
   username_label.setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   username_label.setStyleSheet("color: #aaaaaa");
   hlayout->insertWidget(1, &username_label);
 
   QObject::connect(this, &ButtonControl::clicked, [=]() {
-    if (text() == "ADD") {
-      QString username = InputDialog::getText("Enter your GitHub username", this);
+    if (text() == "추가") {
+      QString username = InputDialog::getText("GitHub 아이디를 입력하셔!", this);
       if (username.length() > 0) {
-        setText("LOADING");
+        setText("추가중");
         setEnabled(false);
         getUserKeys(username);
       }
@@ -31,10 +31,10 @@ void SshControl::refresh() {
   QString param = QString::fromStdString(params.get("GithubSshKeys"));
   if (param.length()) {
     username_label.setText(QString::fromStdString(params.get("GithubUsername")));
-    setText("REMOVE");
+    setText("제거");
   } else {
     username_label.setText("");
-    setText("ADD");
+    setText("추가");
   }
   setEnabled(true);
 }
