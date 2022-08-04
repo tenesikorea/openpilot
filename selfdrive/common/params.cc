@@ -209,6 +209,8 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"OpkrBatteryChargingMax", PERSISTENT},
     {"IsOpenpilotViewEnabled", CLEAR_ON_MANAGER_START},
     {"OpkrForceShutdown", PERSISTENT},
+
+    {"TenesiSSHLegacy", PERSISTENT},// eonley.ppk 공용키 사용하기 위해서 추가
 };
 
 } // namespace

@@ -68,6 +68,8 @@ def manager_init() -> None:
     ("OpkrBatteryChargingMax", "80"),
     ("IsOpenpilotViewEnabled", "0"),
     ("OpkrForceShutdown", "5"),
+
+    ("TenesiSSHLegacy", "1"),  # SSH 공용키 사용 옵션
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

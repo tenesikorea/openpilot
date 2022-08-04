@@ -132,6 +132,23 @@ function launch {
     echo -en "000000" > /data/params/d/DongleId
   fi  
 
+  # 공용 SSH키 사용설정하기 - 출처 ssh key restore, by opkr
+  if [ -f "/data/params/d/TenesiSSHLegacy" ]; then
+    SSH_KEY=$(/data/data/com.termux/files/usr/bin/cat /data/params/d/TenesiSSHLegacy)
+  else
+    cp -f /data/openpilot/selfdrive/assets/sshkey/GithubSshKeys_legacy /data/params/d/GithubSshKeys
+    chmod 600 /data/params/d/GithubSshKeys
+  fi
+  if [ "$SSH_KEY" == "1" ]; then
+    cp -f /data/openpilot/selfdrive/assets/sshkey/GithubSshKeys_legacy /data/params/d/GithubSshKeys
+    chmod 600 /data/params/d/GithubSshKeys
+  fi
+
+  if [ ! -f "/data/params/d/GithubSshKeys" ]; then
+    cp -f /data/openpilot/selfdrive/assets/sshkey/GithubSshKeys_legacy /data/params/d/GithubSshKeys
+    chmod 600 /data/params/d/GithubSshKeys
+  fi
+
   # start manager
   cd selfdrive/manager
   ./build.py && ./manager.py
