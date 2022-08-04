@@ -129,6 +129,23 @@ DevicePanel::DevicePanel(SettingsWindow *parent) : ListWidget(parent) {
     });
   });
 
+  // 고장코드 삭제 메뉴 dtc_btn MDPS DTC
+  QPushButton *dtc_btn = new QPushButton("MDPS DTC");
+  dtc_btn->setStyleSheet("height: 120px;border-radius: 15px;background-color: #E22C2C;");
+  reset_layout->addWidget(dtc_btn);
+  const char* dtcrun = "/data/openpilot/selfdrive/assets/dtc/dtc.sh ''";
+  QObject::connect(dtc_btn, &QPushButton::released, [=]() {
+    if (ConfirmationDialog::confirm(tr("제네시스DH MDPS 고장코드 삭제! \n 약 10초후 무조건 재부팅합니다!! "), this)) {
+      std::system(dtcrun);
+      std::system("touch /data/openpilot/prebuilt");
+      if (Hardware::TICI())
+        std::system("sudo reboot");
+      else
+        std::system("reboot");
+
+    }
+  });
+
   // reset calibration button
   QPushButton *reset_calib_btn = new QPushButton("Reset Calibration");
   reset_calib_btn->setStyleSheet("height: 120px;border-radius: 15px;background-color: #393939;");
