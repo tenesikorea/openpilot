@@ -1,9 +1,9 @@
-const int HYUNDAI_MAX_STEER = 409;             // like stock
+const int HYUNDAI_MAX_STEER = 409;             // 콤마사양은384 최대치 409설정후 values.py에서 상세셋팅
 const int HYUNDAI_MAX_RT_DELTA = 112;          // max delta torque allowed for real time checks
 const uint32_t HYUNDAI_RT_INTERVAL = 250000;   // 250ms between real time checks
-const int HYUNDAI_MAX_RATE_UP = 5;
-const int HYUNDAI_MAX_RATE_DOWN = 7;
-const int HYUNDAI_DRIVER_TORQUE_ALLOWANCE = 50;
+const int HYUNDAI_MAX_RATE_UP = 5; //5 테네시값
+const int HYUNDAI_MAX_RATE_DOWN = 10; //10 테네시값
+const int HYUNDAI_DRIVER_TORQUE_ALLOWANCE = 50; //50 콤마값 사용자가 핸들꺽는 힘 조정
 const int HYUNDAI_DRIVER_TORQUE_FACTOR = 2;
 const int HYUNDAI_STANDSTILL_THRSLD = 30;  // ~1kph
 

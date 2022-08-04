@@ -193,13 +193,13 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"SccSmootherState", PERSISTENT},
     {"SccSmootherSlowOnCurves", PERSISTENT},
     {"SccSmootherSyncGasPressed", PERSISTENT},
-    {"StockNaviDecelEnabled", PERSISTENT},
+    {"StockNaviDecelEnabled", PERSISTENT}, // 순정네비의 감속정보도 사용하기
     {"NewRadarInterface", PERSISTENT},
-    {"DisableOpFcw", PERSISTENT},
+    {"DisableOpFcw", PERSISTENT},// 오파에서 만드는 전방추돌경고 옵션
     {"ShowDebugUI", PERSISTENT},
 
-    {"KeepSteeringTurnSignals", PERSISTENT},
-    {"HapticFeedbackWhenSpeedCamera", PERSISTENT},
+    {"KeepSteeringTurnSignals", PERSISTENT},// 상시조향 옵션
+    {"HapticFeedbackWhenSpeedCamera", PERSISTENT},// nda 카메라과속시 허드 계기판 알림기능
 
     {"SoftRestartTriggered", CLEAR_ON_MANAGER_START},
   
@@ -210,7 +210,25 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"IsOpenpilotViewEnabled", CLEAR_ON_MANAGER_START},
     {"OpkrForceShutdown", PERSISTENT},
 
-    {"TenesiSSHLegacy", PERSISTENT},// eonley.ppk 공용키 사용하기 위해서 추가
+    {"TenesiSSHLegacy", PERSISTENT},// eonley.ppk 공용키 사용하기 위해서추가
+    {"AutoSetOpt", PERSISTENT}, // 장푸 오토 크루즈셋 활용하기 위한 셋딩
+    {"ShowTpmsUI", PERSISTENT}, // 타이어 공기압
+    {"ShowCgearUI", PERSISTENT}, // 기어단수
+    {"SoundAutoHold", PERSISTENT}, // 오토홀드 음성 온 오프
+    {"SoundBsd", PERSISTENT}, // BSD 음성 온 오프
+    {"PutPrebuiltOn", PERSISTENT}, //프리빌트 온오프
+    {"TenesiCamera", PERSISTENT}, // NDA작동시 티맵 카메라 정보에 따른 선택사항
+    {"ShowBsdUI", PERSISTENT},// bsd 보기옵션
+    {"ShowBrakeUI", PERSISTENT},// 기본정보 보기옵션
+    {"ShowErpmUI", PERSISTENT},// 엔진 RPM보기
+    {"T_Debug", PERSISTENT},// tmux a 저장용 옵션
+    {"Zorrobyte", PERSISTENT},// 조로바이트 쪽 코드 선택
+    {"Neokiibyte", PERSISTENT},// 교주 쪽 코드 선택
+    {"Steer_90D", PERSISTENT},//90도 조향 옵션화
+    {"Steer_Tune", PERSISTENT},//속도대응 고정SR값 사용하기
+    {"Sound_Slow", PERSISTENT}, // TAMP자동감속 음성 온 오프
+    {"Sound_Start", PERSISTENT}, // 펭수 시작음성 듣기 안든기
+    {"Steer_409", PERSISTENT}, // 제네시스 조향 토크 409 선택
 };
 
 } // namespace

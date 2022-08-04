@@ -146,6 +146,8 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     visionTurning @119;
     visionleaving @120;
     curvespeedValueChange @121;
+
+    bsdboy @122; # BSD 차량인식시 음성
   }
 }
 
@@ -223,6 +225,11 @@ struct CarState {
   tpms @44 : Tpms;
   vCluRatio @45 :Float32;
   aBasis @46 :Float32;
+
+  # Gear Current By Tenesi
+  currentGear @47 :Float32;
+  # 엔진rpm
+  currentErpm @48 :Float32;
 
   struct Tpms {
     fl @0 :Float32;
@@ -422,6 +429,11 @@ struct CarControl {
       promptDistracted @8;
       
       slowingDownSpeed @9;
+      ready @10; # 펭수 오파 작동준비 되면 인사!
+      tautohold @11; # 오토홀드 음성
+      tbadboy @12; # BSD 차량인식시 음성
+      tready @13; # 오픈파일럿 시작시 음성
+      tyes @14; # 인게이지시 음성 펭수 yes yes
     }
   }
 

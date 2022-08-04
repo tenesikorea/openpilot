@@ -87,21 +87,21 @@ void set_safety_mode(uint16_t mode, int16_t param) {
 
   switch (mode_copy) {
     case SAFETY_SILENT:
-      set_intercept_relay(false);
+      set_intercept_relay(true);
       if (current_board->has_obd) {
         current_board->set_can_mode(CAN_MODE_NORMAL);
       }
       can_silent = ALL_CAN_SILENT;
       break;
     case SAFETY_NOOUTPUT:
-      set_intercept_relay(false);
+      set_intercept_relay(true);
       if (current_board->has_obd) {
         current_board->set_can_mode(CAN_MODE_NORMAL);
       }
       can_silent = ALL_CAN_LIVE;
       break;
     case SAFETY_ELM327:
-      set_intercept_relay(false);
+      set_intercept_relay(true);
       heartbeat_counter = 0U;
       heartbeat_lost = false;
       if (current_board->has_obd) {
@@ -153,7 +153,7 @@ uint8_t loop_counter = 0U;
 void tick_handler(void) {
   if (TICK_TIMER->SR != 0) {
     // siren
-    current_board->set_siren((loop_counter & 1U) && (siren_enabled || (siren_countdown > 0U)));
+    //current_board->set_siren((loop_counter & 1U) && (siren_enabled || (siren_countdown > 0U)));
 
     // decimated to 1Hz
     if (loop_counter == 0U) {
