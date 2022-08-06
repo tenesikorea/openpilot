@@ -45,8 +45,6 @@ ACADOS_SOLVER_TYPE = 'SQP_RTI'
 CRUISE_GAP_BP = [1., 2., 3., 4.]
 CRUISE_GAP_V = [1.20, 1.5, 2.1, 2.0] # 갭3단시 4단의 값을 적용해서 시내에서 혹시라도 정지차 대응시 좋게 하려고 수정
 
-AUTO_TR_BP = [0., 30.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 110.*CV.KPH_TO_MS]
-AUTO_TR_V = [1.1, 1.2, 1.3, 1.45]
 # 크루즈 활성화시 오토TR이 무조건 활성화 된다..
 AUTO_TR_BP = [0., 10.*CV.KPH_TO_MS, 20.*CV.KPH_TO_MS, 30.*CV.KPH_TO_MS, 40.*CV.KPH_TO_MS, 50.*CV.KPH_TO_MS, 60.*CV.KPH_TO_MS, 70.*CV.KPH_TO_MS, 80.*CV.KPH_TO_MS, 100.*CV.KPH_TO_MS, 120.*CV.KPH_TO_MS]
 AUTO_TR_V = [1.0, 1.20, 1.25, 1.45, 1.45, 1.45, 1.50, 1.55, 1.55, 1.55, 1.55]
