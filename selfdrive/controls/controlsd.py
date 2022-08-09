@@ -178,6 +178,9 @@ class Controls:
     self.logged_comm_issue = False
     self.button_timers = {ButtonEvent.Type.decelCruise: 0, ButtonEvent.Type.accelCruise: 0}
     self.last_actuators = car.CarControl.Actuators.new_message()
+    self.steer_limited = False
+    self.desired_curvature = 0.0
+    self.desired_curvature_rate = 0.0
 
     # scc smoother
     self.is_cruise_enabled = False
@@ -620,7 +623,7 @@ class Controls:
                                                                                        lat_plan.curvatures,
                                                                                        lat_plan.curvatureRates)
       actuators.steer, actuators.steeringAngleDeg, lac_log = self.LaC.update(CC.latActive, CS, self.VM, params,
-                                                                             self.last_actuators, self.desired_curvature,
+                                                                             self.last_actuators, self.steer_limited, self.desired_curvature,
                                                                              self.desired_curvature_rate, self.sm['liveLocationKalman'])
     else:
       lac_log = log.ControlsState.LateralDebugState.new_message()
@@ -644,8 +647,8 @@ class Controls:
       if len(dpath_points):
         # Check if we deviated from the path
         # TODO use desired vs actual curvature
-        left_deviation = actuators.steer > 0 and dpath_points[0] < -0.20
-        right_deviation = actuators.steer < 0 and dpath_points[0] > 0.20
+        left_deviation = actuators.steer > 0 and dpath_points[0] < -0.10
+        right_deviation = actuators.steer < 0 and dpath_points[0] > 0.10
 
         #if left_deviation or right_deviation: # 조향제어 경고 해제
           #self.events.add(EventName.steerSaturated)
@@ -743,6 +746,7 @@ class Controls:
       self.last_actuators, can_sends = self.CI.apply(CC, self)
       self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
       CC.actuatorsOutput = self.last_actuators
+      self.steer_limited = abs(CC.actuators.steer - CC.actuatorsOutput.steer) > 1e-2
 
     force_decel = (self.sm['driverMonitoringState'].awarenessStatus < 0.) or \
                   (self.state == State.softDisabling)
@@ -772,6 +776,8 @@ class Controls:
     controlsState.enabled = self.enabled
     controlsState.active = self.active
     controlsState.curvature = curvature
+    controlsState.desiredCurvature = self.desired_curvature
+    controlsState.desiredCurvatureRate = self.desired_curvature_rate
     controlsState.state = self.state
     controlsState.engageable = not self.events.any(ET.NO_ENTRY)
     controlsState.longControlState = self.LoC.long_control_state

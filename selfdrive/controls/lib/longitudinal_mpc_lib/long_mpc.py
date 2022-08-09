@@ -55,7 +55,7 @@ AUTO_TR_V = [1.0, 1.20, 1.25, 1.45, 1.45, 1.45, 1.50, 1.55, 1.55, 1.55, 1.55]
 #AUTO_TR_V = [1.0, 1.2, 1.33, 1.45] # 네오키
 
 AUTO_TR_CRUISE_GAP = 4
-DIFF_RADAR_VISION = 1.0
+DIFF_RADAR_VISION = 1.5
 
 
 # Fewer timestamps don't hurt performance and lead to
