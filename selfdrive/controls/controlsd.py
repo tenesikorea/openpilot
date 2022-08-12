@@ -647,10 +647,15 @@ class Controls:
       if len(dpath_points):
         # Check if we deviated from the path
         # TODO use desired vs actual curvature
-        left_deviation = actuators.steer > 0 and dpath_points[0] < -0.10
-        right_deviation = actuators.steer < 0 and dpath_points[0] > 0.10
+        if self.CP.steerControlType == car.CarParams.SteerControlType.angle:
+          steering_value = actuators.steeringAngleDeg
+        else:
+          steering_value = actuators.steer
 
-        #if left_deviation or right_deviation: # 조향제어 경고 해제
+        left_deviation = steering_value > 0 and dpath_points[0] < -0.20
+        right_deviation = steering_value < 0 and dpath_points[0] > 0.20
+
+        #if left_deviation or right_deviation: # 조향 오버시 경고등 안나오게 설정
           #self.events.add(EventName.steerSaturated)
 
     # Ensure no NaNs/Infs

@@ -56,7 +56,7 @@ class LatControlTorque(LatControl):
     self.kf = CP.lateralTuning.torque.kf
     self.steering_angle_deadzone_deg = CP.lateralTuning.torque.steeringAngleDeadzoneDeg
     self.errors = []
-    self.tune = nTune(CP, self) #ntune
+    self.tune = nTune(CP, self) #ntune 사용여부 결정 위치
 
   def reset(self):
     super().reset()
