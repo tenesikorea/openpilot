@@ -48,19 +48,13 @@ class LatControlTorque(LatControl):
   def __init__(self, CP, CI):
     super().__init__(CP, CI)
     self.pid = PIDController(CP.lateralTuning.torque.kp, CP.lateralTuning.torque.ki,
-                             k_d=CP.lateralTuning.torque.kd,
                              k_f=CP.lateralTuning.torque.kf, pos_limit=self.steer_max, neg_limit=-self.steer_max)
     self.get_steer_feedforward = CI.get_steer_feedforward_function()
     self.use_steering_angle = CP.lateralTuning.torque.useSteeringAngle
     self.friction = CP.lateralTuning.torque.friction
     self.kf = CP.lateralTuning.torque.kf
     self.steering_angle_deadzone_deg = CP.lateralTuning.torque.steeringAngleDeadzoneDeg
-    self.errors = []
     self.tune = nTune(CP, self) #ntune 사용여부 결정 위치
-
-  def reset(self):
-    super().reset()
-    self.errors = []
 
   def update(self, active, CS, VM, params, last_actuators, steer_limited, desired_curvature, desired_curvature_rate, llk):
     #self.tune.check() #ntune
@@ -70,7 +64,6 @@ class LatControlTorque(LatControl):
       output_torque = 0.0
       pid_log.active = False
       angle_steers_des = 0.0
-      self.errors = []
     else:
       if self.use_steering_angle:
         actual_curvature = -VM.calc_curvature(math.radians(CS.steeringAngleDeg - params.angleOffsetDeg), CS.vEgo, params.roll)
@@ -87,28 +80,25 @@ class LatControlTorque(LatControl):
       actual_lateral_accel = actual_curvature * CS.vEgo ** 2
       lateral_accel_deadzone = curvature_deadzone * CS.vEgo ** 2
 
-      #speed_factor = interp(CS.vEgo, [10, 20, 30, 40], [500, 300, 100, 0]) # neokii c3
-      #speed_factor = interp(CS.vEgo, [0, 15], [500, 0]) # comma 1st
-      speed_factor = interp(CS.vEgo, [0, 20], [200, 0]) # test
-      setpoint = desired_lateral_accel + speed_factor * desired_curvature
-      measurement = actual_lateral_accel + speed_factor * actual_curvature
+      low_speed_factor = interp(CS.vEgo, [10, 20, 30, 40], [500, 300, 100, 0]) # neokii c3
+      #low_speed_factor = interp(CS.vEgo, [0, 15], [500, 0]) # comma 1st
+      #low_speed_factor = interp(CS.vEgo, [0, 10, 20], [500, 500, 200]) # comma 2nd
+      #low_speed_factor = interp(CS.vEgo, [0, 20, 30, 40], [200, 100, 50, 0]) # test 10=22mile(36km) 15=34mile (54km) 20=45mile(72km), 30=67mile(108), 40=90mile(144)
+      #low_speed_factor = 0 # telluride
+
+      setpoint = desired_lateral_accel + low_speed_factor * desired_curvature
+      measurement = actual_lateral_accel + low_speed_factor * actual_curvature
       error = setpoint - measurement
       pid_log.error = error
 
-      error_rate = 0
-      if len(self.errors) >= ERROR_RATE_FRAME:
-        error_rate = (error - self.errors[-ERROR_RATE_FRAME]) / ERROR_RATE_FRAME
-
-      self.errors.append(float(error))
-      while len(self.errors) > ERROR_RATE_FRAME:
-        self.errors.pop(0)
-
       ff = desired_lateral_accel - params.roll * ACCELERATION_DUE_TO_GRAVITY
       # convert friction into lateral accel units for feedforward
+
       friction_compensation = interp(apply_deadzone(error, lateral_accel_deadzone), [-FRICTION_THRESHOLD, FRICTION_THRESHOLD], [-self.friction, self.friction])
+
       ff += friction_compensation / self.kf
       freeze_integrator = steer_limited or CS.steeringPressed or CS.vEgo < 5
-      output_torque = self.pid.update(error, error_rate,
+      output_torque = self.pid.update(error,
                                       feedforward=ff,
                                       speed=CS.vEgo,
                                       freeze_integrator=freeze_integrator)
