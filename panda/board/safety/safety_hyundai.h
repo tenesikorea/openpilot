@@ -323,7 +323,7 @@ static int hyundai_tx_hook(CANPacket_t *to_send, bool longitudinal_allowed) {
     }
 
     if (violation) {
-      tx = 0;
+      //tx = 0; // 판다세이프티 해제
     }
   }
 
