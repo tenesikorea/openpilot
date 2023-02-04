@@ -230,6 +230,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"Sound_Slow", PERSISTENT}, // TAMP자동감속 음성 온 오프
     {"Sound_Start", PERSISTENT}, // 펭수 시작음성 듣기 안든기
     {"Steer_409", PERSISTENT}, // 제네시스 조향 토크 409 선택
+    {"Auto_engage", PERSISTENT}, // 자동인게이지 활성화 속도
 };
 
 } // namespace

@@ -8,8 +8,7 @@
 #include <QStackedWidget>
 #include <QWidget>
 #include <QStackedLayout>
-
-
+#include <QComboBox>
 #include "selfdrive/ui/qt/widgets/controls.h"
 
 // ********** settings window + top-level panels **********
@@ -199,8 +198,35 @@ public:
   explicit TenesiPanel(QWidget *parent = nullptr);
 };
 
+class TenesiCarPanel : public QWidget {
+  Q_OBJECT
+public:
+  explicit TenesiCarPanel(QWidget *parent = nullptr);
+};
+
 class TbranchPanel : public QWidget {
   Q_OBJECT
 public:
   explicit TbranchPanel(QWidget *parent = nullptr);
 };
+
+// ajouatom:ajouato 코드추가 여기부터
+class CValueControl : public AbstractControl {
+    Q_OBJECT
+
+public:
+    CValueControl(const QString& params, const QString& title, const QString& desc, const QString& icon, int min, int max, int unit = 1);
+
+private:
+    QPushButton btnplus;
+    QPushButton btnminus;
+    QLabel label;
+
+    QString m_params;
+    int     m_min;
+    int     m_max;
+    int     m_unit;
+
+    void refresh();
+};
+//ajouato 코드추가 여기까지

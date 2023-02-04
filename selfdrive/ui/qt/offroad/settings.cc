@@ -492,7 +492,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
     {"토글메뉴", new TogglesPanel(this)},
     {"브랜치관리", new TbranchPanel(this)},
     {"테네시설정", new TenesiPanel(this)},
-    {"소프트개발자", new SoftwarePanel(this)},
+    //{"소프트개발자", new SoftwarePanel(this)},
     {"현기전용셋팅", new CommunityPanel(this)},
   };
 
@@ -1214,3 +1214,97 @@ TenesiPanel::TenesiPanel(QWidget* parent) : QWidget(parent) {
     layout->addWidget(realdatadelbtn);
 
 } // 테네시 메뉴 추가
+
+TenesiCarPanel::TenesiCarPanel(QWidget* parent) : QWidget(parent) {
+  QVBoxLayout *layout = new QVBoxLayout(this);
+
+  layout->addWidget(horizontal_line());
+  //layout->addWidget(new CValueControl("Boost_s", "스타트 악셀 부스트값 *0.01", "SCC 악셀 부스트값.", "../assets/offroad/icon_road.png", 0, 20, 1));
+  //layout->addWidget(new CValueControl("Creep_Speed_Start", "스타트 악셀 속도한계 km", "SCC 악셀 부스트값 적용 속도. 단위 km", "../assets/offroad/icon_road.png", 0, 30, 1));
+  //layout->addWidget(new CValueControl("Boost_v", "가속 악셀 부스트값 *0.01", "SCC 악셀 가속시 부스트값.", "../assets/offroad/icon_road.png", 0, 50, 1));
+  //layout->addWidget(new CValueControl("Creep_Speed_Scc", "가속 악셀 부스트값 속도범위 km", "SCC 악셀 가속시 부스트값 적용 속도 범위 지정. 단위 km", "../assets/offroad/icon_road.png", 0, 100, 1));
+  //layout->addWidget(new CValueControl("TenesiSccStopCost", "SCC 정차시도 브레이크 감도조절", "SCC 정차시도 브레이크 감도조절 단위 * 0.01", "../assets/offroad/icon_road.png", 0, 30, 1));
+  //layout->addWidget(new CValueControl("TenesiLateralMotionCost", "LATERAL_MOTION_COST..", "LATERAL_MOTION_COST 단위 * 0.01", "../assets/offroad/icon_road.png", 0, 30, 1));
+  //layout->addWidget(new CValueControl("TenesiSrcost", " 조향관련코스트 전환 km", " 조향관련된 수치 전환 관련 속도위치 지정 km", "../assets/offroad/icon_road.png", 1, 100, 1));
+  //layout->addWidget(new CValueControl("Lane_Change", "차로변경 속도", "자동 차로 변경 적용 속도 지정.", "../assets/offroad/icon_road.png", 0, 200, 1));
+  layout->addWidget(new CValueControl("Auto_engage", "자동인게이지 속도", "자동 인게이지 적용 속도 지정.", "../assets/offroad/icon_road.png", 0, 30, 1));
+
+  //addItem(new ParamControl("AutoResumeFromGas", "엑셀크루즈ON", "엑셀을 60%이상 밟으면 크루즈를 켭니다.", "../assets/offroad/icon_road.png", this));
+} // 테네시 SCC등 미세 설정값 수정
+
+// // ajouato 코드추가 여기부터
+CValueControl::CValueControl(const QString& params, const QString& title, const QString& desc, const QString& icon, int min, int max, int unit/*=1*/) : AbstractControl(title, desc, icon)
+{
+
+    m_params = params;
+    m_min = min;
+    m_max = max;
+    m_unit = unit;
+
+    label.setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    label.setStyleSheet("color: #e0e879");
+    hlayout->addWidget(&label);
+
+    btnminus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+    btnplus.setStyleSheet(R"(
+    padding: 0;
+    border-radius: 50px;
+    font-size: 35px;
+    font-weight: 500;
+    color: #E4E4E4;
+    background-color: #393939;
+  )");
+    btnminus.setFixedSize(150, 100);
+    btnplus.setFixedSize(150, 100);
+    hlayout->addWidget(&btnminus);
+    hlayout->addWidget(&btnplus);
+
+    QObject::connect(&btnminus, &QPushButton::released, [=]() {
+        auto str = QString::fromStdString(Params().get(m_params.toStdString()));
+        int value = str.toInt();
+        value = value - m_unit;
+        if (value < m_min) {
+            value = m_min;
+        }
+        else {
+        }
+
+        //UIScene& scene = uiState()->scene;//QUIState::ui_state.scene;
+        //scene.scr.autoFocus = value;
+        QString values = QString::number(value);
+        Params().put(m_params.toStdString(), values.toStdString());
+        refresh();
+    });
+
+    QObject::connect(&btnplus, &QPushButton::released, [=]() {
+        auto str = QString::fromStdString(Params().get(m_params.toStdString()));
+        int value = str.toInt();
+        value = value + m_unit;
+        if (value > m_max) {
+            value = m_max;
+        }
+        else {
+        }
+
+        //UIScene& scene = uiState()->scene;//QUIState::ui_state.scene;
+        //scene.scr.autoFocus = value;
+        QString values = QString::number(value);
+        Params().put(m_params.toStdString(), values.toStdString());
+        refresh();
+    });
+    refresh();
+}
+
+void CValueControl::refresh()
+{
+    label.setText(QString::fromStdString(Params().get(m_params.toStdString())));
+    btnminus.setText("－");
+    btnplus.setText("＋");
+} // ajouato 코드추가 여기까지

@@ -90,6 +90,7 @@ def manager_init() -> None:
     ("Sound_Slow", "1"),  # TAMP자동감속 음성 듣기 안든기
     ("Sound_Start", "1"),  # 펭수 시작음성 듣기 안든기
     ("Steer_409", "1"), #펭수 시작음성 듣기 안든기
+    ("Auto_engage", "8"),  # 자동인게이지 기본속도
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

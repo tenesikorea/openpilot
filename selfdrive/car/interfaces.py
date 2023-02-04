@@ -189,8 +189,9 @@ class CarInterfaceBase(ABC):
         events.add(EventName.pcmDisable)
 
     # 자동인게이지 장푸 버젼 engage when vEgo above 9.375(15kmh)
+    auto_engage_speed = float(int(Params().get("Auto_engage", encoding="utf8"))) * CV.KPH_TO_MS # 차로변경 최저 속도 변경 가능하게
     if cs_out.cruiseState.enabled:
-      if cs_out.gearShifter == GearShifter.drive and cs_out.vEgo > 7.:  #9.375:
+      if cs_out.gearShifter == GearShifter.drive and cs_out.vEgo > auto_engage_speed: #9.375:
         events.add(EventName.pcmEnable)
 
     return events
