@@ -31,6 +31,7 @@
 #include <QScroller>
 #include <QListView>
 #include <QListWidget>
+#include <QProcess> //tmux 터미널등
 
 TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
   // param, title, desc, icon
@@ -134,17 +135,19 @@ DevicePanel::DevicePanel(SettingsWindow *parent) : ListWidget(parent) {
   QPushButton *dtc_btn = new QPushButton("MDPS DTC");
   dtc_btn->setStyleSheet("height: 120px;border-radius: 15px;background-color: #E22C2C;");
   reset_layout->addWidget(dtc_btn);
-  const char* dtcrun = "/data/openpilot/selfdrive/assets/dtc/dtc.sh ''";
+  const char* dtc_run = "/data/openpilot/selfdrive/assets/dtc/dtc.sh ''";
   QObject::connect(dtc_btn, &QPushButton::released, [=]() {
-    if (ConfirmationDialog::confirm(tr("제네시스DH MDPS 고장코드 삭제! \n 약 10초후 무조건 재부팅합니다!! "), this)) {
-      std::system(dtcrun);
+    //if (ConfirmationDialog::confirm(tr("제네시스DH MDPS 고장코드 삭제! \n 약 10초후 무조건 재부팅합니다!! "), tr("실 행?"), this)) {
+      std::system(dtc_run);
       std::system("touch /data/openpilot/prebuilt");
-      if (Hardware::TICI())
-        std::system("sudo reboot");
-      else
-        std::system("reboot");
+      QProcess::execute("/data/openpilot/selfdrive/assets/dtc/restart.sh");
 
-    }
+      //std::system("touch /data/openpilot/prebuilt");
+      //if (Hardware::TICI())
+      //  std::system("sudo reboot");
+      //else
+      //  std::system("reboot");
+    //}
   });
 
   // reset calibration button
