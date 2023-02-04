@@ -122,10 +122,12 @@ DevicePanel::DevicePanel(SettingsWindow *parent) : ListWidget(parent) {
   restart_openpilot_btn->setStyleSheet("height: 120px;border-radius: 15px;background-color: #7300a4;");
   reset_layout->addWidget(restart_openpilot_btn);
   QObject::connect(restart_openpilot_btn, &QPushButton::released, [=]() {
-    emit closeSettings();
+    std::system("rm /data/openpilot/prebuilt");
+    QProcess::execute("/data/openpilot/selfdrive/assets/dtc/restart.sh");
+    /*emit closeSettings();
     QTimer::singleShot(1000, []() {
       Params().putBool("SoftRestartTriggered", true);
-    });
+    });*/
   });
 
   // 고장코드 삭제 메뉴 dtc_btn MDPS DTC
