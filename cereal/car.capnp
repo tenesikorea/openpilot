@@ -148,6 +148,7 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     curvespeedValueChange @121;
 
     bsdboy @122; # BSD 차량인식시 음성
+    mdpserr @123; # MDPS에러시 음성
   }
 }
 

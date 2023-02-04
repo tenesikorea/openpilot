@@ -19,9 +19,6 @@ class CarInterface(CarInterfaceBase):
   def __init__(self, CP, CarController, CarState):
     super().__init__(CP, CarController, CarState)
     self.cp2 = self.CS.get_can2_parser(CP)
-    self.mad_mode_enabled = Params().get_bool('MadModeEnabled')
-    self.sound_auto_hold = Params().get_bool('SoundAutoHold') # 테네시 음성관련
-    self.sound_bsd = Params().get_bool('SoundBsd') # 테네시 음성관련
 
   @staticmethod
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
@@ -392,7 +389,7 @@ class CarInterface(CarInterfaceBase):
 
     # most HKG cars has no long control, it is safer and easier to engage by main on
 
-    if self.mad_mode_enabled:
+    if Params().get_bool('MadModeEnabled'):
       ret.cruiseState.enabled = ret.cruiseState.available
 
     # turning indicator alert logic
@@ -459,11 +456,14 @@ class CarInterface(CarInterfaceBase):
         if b.type == ButtonType.decelCruise and not b.pressed:
           events.add(EventName.buttonEnable)
 
-    if self.CS.brakeHold and self.sound_auto_hold: # 오토홀드 - 음성메시지
+    if self.CS.brakeHold and Params().get_bool('SoundAutoHold'): # 오토홀드 - 음성메시지
       events.add(EventName.brakeHold)
 
-    if (ret.leftBlindspot or ret.rightBlindspot) and self.sound_bsd: # BSD-음성메시지
+    if (ret.leftBlindspot or ret.rightBlindspot) and Params().get_bool('SoundBsd'): # BSD-음성메시지
       events.add(EventName.bsdboy)
+
+    if self.CS.dhmdps_err == 1 and Params().get_bool('Sound_Mdpserr'): # mdps 고장코드 발생시 음성으로 알려준다..
+      events.add(EventName.mdpserr)
 
     # scc smoother
     if self.CC.scc_smoother is not None:

@@ -576,7 +576,8 @@ class Controls:
       sr = max(ntune_common_get('steerRatio'), 0.1)
 
     if Params().get_bool('Steer_SRTune'):
-      sr = interp(CS.vEgo * 3.6, SR_SCALE_BP, SR_SCALE_V) * 0.95 # Sr비율조절
+      sr_v = float(int(Params().get("Steer_SRTune_v", encoding="utf8"))) * 0.01 # 가변SR 선택시에 SR비율 조절
+      sr = interp(CS.vEgo * 3.6, SR_SCALE_BP, SR_SCALE_V) * sr_v # Sr비율조절
 
     self.VM.update_params(x, sr)
 

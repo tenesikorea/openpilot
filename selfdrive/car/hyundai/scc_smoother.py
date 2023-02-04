@@ -370,7 +370,14 @@ class SccSmoother:
     #  if not lead.radar:
     #    brake_factor *= 0.975
 
-    start_boost = interp(CS.out.vEgo, [0.0, CREEP_SPEED, 2 * CREEP_SPEED], [0.6, 0.6, 0.0])
+    # 롱컨일때 가속값 튜닝
+    if CS.out.vEgo < float(
+            int(Params().get("Creep_Speed_Start", encoding="utf8"))):  # 시속5키로까지만 0.05를 적용..차가 튀어 나가는 느낌을 줄인다..
+      boost_v = float(int(Params().get("Boost_s", encoding="utf8"))) * 0.01  # .05 정지후 시속 몇키로까지는 Boost_s를 적용
+    else:
+      boost_v = float(int(Params().get("Boost_v", encoding="utf8"))) * 0.01  # 0.5 SCC가속중 시속 몇키로 까지는 Boost_v를 정용
+
+    start_boost = interp(CS.out.vEgo, [CREEP_SPEED, 1.6 * CREEP_SPEED], [boost_v, 0.0])
     is_accelerating = interp(accel, [0.0, 0.2], [0.0, 1.0])
     boost = start_boost * is_accelerating
 

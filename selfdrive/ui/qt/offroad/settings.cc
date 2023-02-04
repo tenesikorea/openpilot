@@ -1076,6 +1076,7 @@ TbranchPanel::TbranchPanel(QWidget* parent) : QWidget(parent) {
       std::system("chmod 600 /data/params/d/GithubSshKeys");
     }
   });
+  layout->addWidget(new ParamControl("TenesiSSHLegacy", "SSH 공용키 사용", "SSH 공용키 사용..", "../assets/offroad/icon_shell.png", this));
  // 깃 업데이트 관련끝
 
 } // 테네시 브랜치 관리메뉴
@@ -1109,93 +1110,28 @@ TenesiPanel::TenesiPanel(QWidget* parent) : QWidget(parent) {
   } //001 끝
 
   layout->addWidget(horizontal_line()); // 구분선 구간
-  layout->addWidget(new ParamControl("Steer_409",
-                                            "조향토크 409설정",
-                                            "조향토크를 409로 무조건 설정 GenesisDH 테스트용",
-                                            "../assets/offroad/icon_shell.png"
-                                            ));
-  layout->addWidget(new ParamControl("Steer_SRTune",
-                                            "조향비율 가변",
-                                            "SR값을 속도대비 가변으로 사용하기",
-                                            "../assets/offroad/icon_shell.png"
-                                            ));
-  layout->addWidget(new ParamControl("Steer_LatTune",
-                                            "토크 LatAccel 가변",
-                                            "토크 LatAccel을 가변으로 사용하기",
-                                            "../assets/offroad/icon_shell.png"
-                                            ));
-  layout->addWidget(new ParamControl("Steer_90D",
-                                            "조향각 90도 제한",
-                                            "제네시스DH 조향에러시 사용권고",
-                                            "../assets/offroad/icon_shell.png"
-                                            ));
-  layout->addWidget(new ParamControl("TenesiSSHLegacy",
-                                            "SSH 공용키 사용",
-                                            "SSH 공용키 사용..",
-                                            "../assets/offroad/icon_shell.png"
-                                            ));
-  layout->addWidget(new ParamControl("T_Debug",
-                                            "Tmux a 저장옵션",
-                                            "Tmux a 내용을 화일로 저장합니다..",
-                                            "../assets/offroad/icon_shell.png"
-                                            ));
-  layout->addWidget(new ParamControl("Zorrobyte",
-                                            "차로인식 Zorrobyte",
-                                            "차로인식 Zorrobyte 적용선택",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
-  layout->addWidget(new ParamControl("Neokiibyte",
-                                            "차로인식 NeokiiByte",
-                                            "차로인식 NeokiiByte 적용여부 선택",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
+  layout->addWidget(new ParamControl("TenesiCamera", "NDA 상시 카메라경고", "NDA 카메라 경고를 계기판과 HUD에 끄거나 켭니다.", "../assets/offroad/icon_shell.png"));
+  layout->addWidget(new CValueControl("TenesiCameraSelect", "NDA 상시 카메라경고 HUD 표시", "HUD나 계기판에 경고표시 모드 선택 1 2 3", "../assets/offroad/icon_road.png", 0, 15, 1));
+  layout->addWidget(new CValueControl("TenesiBrakeSelect", "HUD에 브레이킹 작동표시", "HUD에 브레이킹 작동표시 모드 선택 1 2 3", "../assets/offroad/icon_road.png", 0, 15, 1));
+  layout->addWidget(new ParamControl("Zorrobyte", "차로인식 Zorrobyte", "차로인식 Zorrobyte 적용선택", "../assets/offroad/icon_road.png", this));
+  layout->addWidget(new ParamControl("Neokiibyte", "차로인식 NeokiiByte", "차로인식 NeokiiByte 적용여부 선택", "../assets/offroad/icon_road.png", this));
+  layout->addWidget(new ParamControl("Steer_SRTune", "조향비율 가변", "SR값을 속도대비 가변으로 사용하기", "../assets/offroad/icon_shell.png"));
+  layout->addWidget(new ParamControl("Steer_LatTune", "토크 LatAccel 가변", "토크 LatAccel을 가변으로 사용하기", "../assets/offroad/icon_shell.png"));
+  layout->addWidget(new ParamControl("Steer_90D", "조향각 90도 제한", "제네시스DH 조향에러시 사용권고", "../assets/offroad/icon_shell.png"));
+  layout->addWidget(new ParamControl("AutoSetOpt", "크루즈 오토 셋", "파파의 오토크루즈 셋 적용", "../assets/offroad/icon_road.png", this));
+  layout->addWidget(new ParamControl("TenesiSSHLegacy", "SSH 공용키 사용", "SSH 공용키 사용..", "../assets/offroad/icon_shell.png"));
+  layout->addWidget(new ParamControl("T_Debug", "Tmux a 저장옵션", "Tmux a 내용을 화일로 저장합니다..", "../assets/offroad/icon_shell.png"));
+  layout->addWidget(new ParamControl("Steer_409", "조향토크 409설정", "조향토크를 409로 무조건 설정 GenesisDH 테스트용", "../assets/offroad/icon_shell.png"));
   layout->addWidget(horizontal_line()); // 구분선 구간
-  layout->addWidget(new ParamControl("Sound_Start",
-                                            "오프시작시 음성지원 선택",
-                                            "오프시작시 음성 온 오프",
-                                            "../assets/offroad/icon_shell.png"
-                                            ));
-  layout->addWidget(new ParamControl("Sound_Slow",
-                                            "TMAP 자동감속 음성지원 선택",
-                                            "네비 감속시 음성 온 오프",
-                                            "../assets/offroad/icon_shell.png"
-                                            ));
-  layout->addWidget(new ParamControl("SoundAutoHold",
-                                            "오토홀드음성지원",
-                                            "오토홀드음성을 끄거나 켭니다..",
-                                            "../assets/offroad/icon_shell.png"
-                                            ));
-  layout->addWidget(new ParamControl("SoundBsd",
-                                            "측후방 음성지원",
-                                            "측후방 센서 작동시 음성을 끄거나 켭니다.",
-                                            "../assets/offroad/icon_shell.png"
-                                            ));
+  layout->addWidget(new ParamControl("Sound_Start", "오프시작시 음성지원 선택", "오프시작시 음성 온 오프", "../assets/offroad/icon_shell.png"));
+  layout->addWidget(new ParamControl("Sound_Slow", "TMAP 자동감속 음성지원 선택", "네비 감속시 음성 온 오프", "../assets/offroad/icon_shell.png"));
+  layout->addWidget(new ParamControl("SoundAutoHold", "오토홀드음성지원", "오토홀드음성을 끄거나 켭니다..", "../assets/offroad/icon_shell.png"));
+  layout->addWidget(new ParamControl("SoundBsd", "측후방 음성지원", "측후방 센서 작동시 음성을 끄거나 켭니다.", "../assets/offroad/icon_shell.png"));
   layout->addWidget(horizontal_line()); // 구분선 구간
-  layout->addWidget(new ParamControl("TenesiCamera",
-                                            "NDA 상시 카메라경고",
-                                            "NDA 카메라 경고를 계기판과 HUD에 끄거나 켭니다.",
-                                            "../assets/offroad/icon_shell.png"
-                                            ));
-  layout->addWidget(new ParamControl("AutoSetOpt",
-                                            "크루즈 오토 셋",
-                                            "파파의 오토크루즈 셋 적용",
-                                            "../assets/offroad/icon_road.png",
-                                            this));
-  layout->addWidget(new ParamControl("ShowErpmUI",
-                                            "엔진RPM 표시",
-                                            "현재엔진RPM 표시하기..",
-                                            "../assets/offroad/icon_shell.png"
-                                            ));
-  layout->addWidget(new ParamControl("ShowCgearUI",
-                                            "주행기어단수 보기",
-                                            "기어레버 위치와 기어단수를 볼수 있습니다..",
-                                            "../assets/offroad/icon_shell.png"
-                                            ));
-  layout->addWidget(new ParamControl("ShowBsdUI",
-                                            "측후방정보 보기",
-                                            "측후방 감지기 이미지를 볼수 있습니다..",
-                                            "../assets/offroad/icon_shell.png"
-                                            ));
+;
+  layout->addWidget(new ParamControl("ShowErpmUI", "엔진RPM 표시", "현재엔진RPM 표시하기..", "../assets/offroad/icon_shell.png"));
+  layout->addWidget(new ParamControl("ShowCgearUI", "주행기어단수 보기", "기어레버 위치와 기어단수를 볼수 있습니다..", "../assets/offroad/icon_shell.png"));
+  layout->addWidget(new ParamControl("ShowBsdUI", "측후방정보 보기", "측후방 감지기 이미지를 볼수 있습니다..", "../assets/offroad/icon_shell.png"));
   layout->addWidget(horizontal_line());
 
   auto recorddelbtn = new ButtonControl("녹화파일 전부 삭제", "실행");
@@ -1220,17 +1156,16 @@ TenesiCarPanel::TenesiCarPanel(QWidget* parent) : QWidget(parent) {
   QVBoxLayout *layout = new QVBoxLayout(this);
 
   layout->addWidget(horizontal_line());
-  //layout->addWidget(new CValueControl("Boost_s", "스타트 악셀 부스트값 *0.01", "SCC 악셀 부스트값.", "../assets/offroad/icon_road.png", 0, 20, 1));
-  //layout->addWidget(new CValueControl("Creep_Speed_Start", "스타트 악셀 속도한계 km", "SCC 악셀 부스트값 적용 속도. 단위 km", "../assets/offroad/icon_road.png", 0, 30, 1));
-  //layout->addWidget(new CValueControl("Boost_v", "가속 악셀 부스트값 *0.01", "SCC 악셀 가속시 부스트값.", "../assets/offroad/icon_road.png", 0, 50, 1));
-  //layout->addWidget(new CValueControl("Creep_Speed_Scc", "가속 악셀 부스트값 속도범위 km", "SCC 악셀 가속시 부스트값 적용 속도 범위 지정. 단위 km", "../assets/offroad/icon_road.png", 0, 100, 1));
+  layout->addWidget(new CValueControl("Auto_engage", "자동인게이지 속도", "자동 인게이지 적용 속도 지정.", "../assets/offroad/icon_road.png", 0, 30, 1));
+  layout->addWidget(new CValueControl("Boost_s", "스타트 악셀 부스트값 *0.01", "SCC 악셀 부스트값.", "../assets/offroad/icon_road.png", 0, 20, 1));
+  layout->addWidget(new CValueControl("Creep_Speed_Start", "스타트 악셀 속도한계 km", "SCC 악셀 부스트값 적용 속도. 단위 km", "../assets/offroad/icon_road.png", 0, 30, 1));
+  layout->addWidget(new CValueControl("Boost_v", "가속 악셀 부스트값 *0.01", "SCC 악셀 가속시 부스트값.", "../assets/offroad/icon_road.png", 0, 50, 1));
+  layout->addWidget(new CValueControl("Creep_Speed_Scc", "가속 악셀 부스트값 속도범위 km", "SCC 악셀 가속시 부스트값 적용 속도 범위 지정. 단위 km", "../assets/offroad/icon_road.png", 0, 100, 1));
+  layout->addWidget(new CValueControl("Lane_Change", "차로변경 속도", "자동 차로 변경 적용 속도 지정.", "../assets/offroad/icon_road.png", 0, 200, 1));
   //layout->addWidget(new CValueControl("TenesiSccStopCost", "SCC 정차시도 브레이크 감도조절", "SCC 정차시도 브레이크 감도조절 단위 * 0.01", "../assets/offroad/icon_road.png", 0, 30, 1));
   //layout->addWidget(new CValueControl("TenesiLateralMotionCost", "LATERAL_MOTION_COST..", "LATERAL_MOTION_COST 단위 * 0.01", "../assets/offroad/icon_road.png", 0, 30, 1));
   //layout->addWidget(new CValueControl("TenesiSrcost", " 조향관련코스트 전환 km", " 조향관련된 수치 전환 관련 속도위치 지정 km", "../assets/offroad/icon_road.png", 1, 100, 1));
-  //layout->addWidget(new CValueControl("Lane_Change", "차로변경 속도", "자동 차로 변경 적용 속도 지정.", "../assets/offroad/icon_road.png", 0, 200, 1));
-  layout->addWidget(new CValueControl("Auto_engage", "자동인게이지 속도", "자동 인게이지 적용 속도 지정.", "../assets/offroad/icon_road.png", 0, 30, 1));
 
-  //addItem(new ParamControl("AutoResumeFromGas", "엑셀크루즈ON", "엑셀을 60%이상 밟으면 크루즈를 켭니다.", "../assets/offroad/icon_road.png", this));
 } // 테네시 SCC등 미세 설정값 수정
 
 // // ajouato 코드추가 여기부터

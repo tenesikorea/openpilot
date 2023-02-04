@@ -91,6 +91,13 @@ def manager_init() -> None:
     ("Sound_Start", "1"),  # 펭수 시작음성 듣기 안든기
     ("Steer_409", "1"), #펭수 시작음성 듣기 안든기
     ("Auto_engage", "8"),  # 자동인게이지 기본속도
+    ("TenesiCameraSelect", "1"),  # NDA작동시 티맵 카메라 정보에 따른 허드표시 선택사항
+    ("Boost_s", "5"),  # 악셀 부스트 적용 영역 지정- 정지후 적용키로
+    ("Creep_Speed_Start", "8"),  # 악셀 부스트 적용 영역 지정- 정지후 적용키로
+    ("Boost_v", "30"),  # 악셀 부스트 적용 영역 지정- SCC 속도범위지정
+    ("Creep_Speed_Scc", "70"),  # 악셀 부스트 적용 영역 지정- SCC 속도범위지정
+    ("Lane_Change", "70"),  # 자동 레인 체인지 속도
+    ("TenesiBrakeSelect", "3"),  # 브레이킹작동시 허드에 표시하기
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

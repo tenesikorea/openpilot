@@ -57,6 +57,7 @@ class CarState(CarStateBase):
     self.use_cluster_speed = Params().get_bool('UseClusterSpeed')
     self.long_control_enabled = Params().get_bool('LongControlEnabled')
     #self.gear_Shifter = GearShifter.unknown  # 기어레버 특수한 환경용
+    self.dhmdps_err = 0 # DHMDPS 고장코드 자동 삭제용
 
   def update(self, cp, cp2, cp_cam):
     cp_mdps = cp2 if self.mdps_bus else cp
@@ -160,6 +161,7 @@ class CarState(CarStateBase):
     # TODO: Check this
     ret.brakeLights = bool(cp.vl["TCS13"]["BrakeLight"] or ret.brakePressed)
     ret.gasPressed = cp.vl["TCS13"]["DriverOverride"] == 1
+    self.currentBrake = ret.brakeLights  # 브레이크등 작동시 허드에 표시하기
 
     if self.CP.carFingerprint in EV_HYBRID_CAR:
       if self.CP.carFingerprint in HYBRID_CAR:

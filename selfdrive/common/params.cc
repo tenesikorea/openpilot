@@ -231,6 +231,12 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"Sound_Start", PERSISTENT}, // 펭수 시작음성 듣기 안든기
     {"Steer_409", PERSISTENT}, // 제네시스 조향 토크 409 선택
     {"Auto_engage", PERSISTENT}, // 자동인게이지 활성화 속도
+    {"TenesiCameraSelect", PERSISTENT}, // 자동인게이지 활성화 속도
+    {"Boost_s", PERSISTENT}, // 정지후 출발시 악셀 부스트값
+    {"Creep_Speed_Start", PERSISTENT}, // 악셀 부스트 적용 영역 지정- 정지후 적용키로
+    {"Boost_v", PERSISTENT}, // 주행시 가속 부트스값
+    {"Creep_Speed_Scc", PERSISTENT}, // 악셀 부스트 적용 영역 지정- SCC 속도범위지정
+    {"Lane_Change", PERSISTENT}, // 차로 변경 가능한 속도 설정
 };
 
 } // namespace

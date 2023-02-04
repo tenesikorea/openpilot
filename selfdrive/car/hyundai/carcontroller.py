@@ -158,13 +158,19 @@ class CarController:
         self.angle_limit_counter = 0
         self.cut_steer_frames += 1
 
+    hud_lane_warning = int(Params().get("TenesiCameraSelect", encoding="utf8"))  # 기본은 1 2 3 까지 선택적 표시
     if self.tenesi_camera:
       if self.scc_smoother.active_cam: # NDA가 카메라 인식후 차로를 깜빡이게 하기
         if self.frame % 50 == 0:
           self.lane_blink_on = not self.lane_blink_on
-        left_lane_warning = right_lane_warning = 1 # 1을 넣으면 핸들진동 기능과 함께 깜빡임이 된다.. 2는 차로 소리가 나온다.(계기판 동시) 3은 허드에서만 표시가 나온다..
+        left_lane_warning = right_lane_warning = hud_lane_warning # 1을 넣으면 핸들진동 기능과 함께 깜빡임이 된다.. 2는 차로 소리가 나온다.(계기판 동시) 3은 허드에서만 표시가 나온다..
       else:
         self.lane_blink_on = False # NDA가 카메라 인식후 차로를 깜빡이게 하기
+
+    hud_brake_warning = int(Params().get("TenesiBrakeSelect", encoding="utf8")) # 기본은 1 2 3 까지 선택적 표시
+    if CS.currentBrake and CS.out.vEgo > 3 and not tmap_camera: # 티맵카메라작동시 작동안함..
+      sys_state = 4 # 핸들모양이 허드에 안뜨게 함..
+      left_lane_warning = right_lane_warning = hud_brake_warning # 차로 색상및 계기판 진동표시나 소리표시등을 선택적으로 표시가능
 
     can_sends = []
     can_sends.append(create_lkas11(self.packer, self.frame, self.car_fingerprint, apply_steer, lkas_active,

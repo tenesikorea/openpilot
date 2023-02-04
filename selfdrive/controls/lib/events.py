@@ -559,6 +559,14 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
       Priority.LOW, VisualAlert.none, AudibleAlert.tbadboy, 3.),
   },
 
+  EventName.mdpserr: {
+    ET.PERMANENT: Alert(
+      "..MDPS가 작동안합니다..",
+      "-- 장치에서 MDPS DTC를 누르세요! --",
+      AlertStatus.normal, AlertSize.full,
+      Priority.MID, VisualAlert.none, AudibleAlert.tready, 2.),
+  },
+
   EventName.parkBrake: {
     ET.USER_DISABLE: EngagementAlert(AudibleAlert.none),
     ET.NO_ENTRY: NoEntryAlert("주차 브레이크를 해제하세요"),
