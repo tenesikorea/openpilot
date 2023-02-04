@@ -492,6 +492,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
     {"토글메뉴", new TogglesPanel(this)},
     {"브랜치관리", new TbranchPanel(this)},
     {"테네시설정", new TenesiPanel(this)},
+    {"테네시Car", new TenesiCarPanel(this)},
     //{"소프트개발자", new SoftwarePanel(this)},
     {"현기전용셋팅", new CommunityPanel(this)},
   };
