@@ -36,7 +36,7 @@ def manager_init() -> None:
   params.clear_all(ParamKeyType.CLEAR_ON_MANAGER_START)
 
   default_params: List[Tuple[str, Union[str, bytes]]] = [
-    ("CompletedTrainingVersion", "0"),
+    ("CompletedTrainingVersion", "0.2.0"),
     ("DisengageOnAccelerator", "0"),
     ("GsmMetered", "1"),
     ("HasAcceptedTerms", "0"),
