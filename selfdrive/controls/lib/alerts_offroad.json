@@ -1,0 +1,56 @@
+{
+  "Offroad_TemperatureTooHigh": {
+    "text": "EON 온도가 너무 높아서 시스템이 시작되지 않습니다.",
+    "severity": 1
+  },
+  "Offroad_ConnectivityNeededPrompt": {
+    "text": "즉시 네트워크를 연결하여 업데이트를 확인하세요. 그렇지 않으면 오픈파일럿이 활성화되지 않습니다.",
+    "severity": 0,
+    "_comment": "신버젼은 무의미 합니다.."
+  },
+  "Offroad_ConnectivityNeeded": {
+    "text": "네트워크를 연결하여 업데이트를 확인하세요. 그렇지 않으면 오픈파일럿이 활성화되지 않습니다.",
+    "severity": 1
+  },
+  "Offroad_UpdateFailed": {
+    "text": "업데이트를 다운로드할 수 없습니다\n",
+    "severity": 1,
+    "_comment": "GIT PULL 명령으로 업데이트 하세요"
+  },
+  "Offroad_InvalidTime": {
+    "text": "잘못된 날짜 및 시간설정으로 시스템이 시작되지않습니다. 네트워크에 연결하여 날짜 및 시간설정을 진행하세요.",
+    "severity": 1
+  },
+  "Offroad_IsTakingSnapshot": {
+    "text": "카메라 스냅샷 촬영이 완료되지않아 시스템이 시작되지 않습니다.",
+    "severity": 0
+  },
+  "Offroad_NeosUpdate": {
+    "text": "NEOS 운영 체제에 대한 업데이트가 백그라운드에서 다운로드되는중 입니다. 설치할 준비가 되면 업데이트하라는 메시지가 표시됩니다.",
+    "severity": 0
+  },
+  "Offroad_UnofficialHardware": {
+    "text": "디바이스 등록을 할수가 없습니다.. 콤마지원에 문의하여서 등록하세요",
+    "severity": 1
+  },
+  "Offroad_StorageMissing": {
+    "text": "저장장치를 찾을수 없어요.",
+    "severity": 1
+  },
+  "Offroad_BadNvme": {
+    "text": "Unsupported NVMe drive detected. Device may draw significantly more power and overheat due to the unsupported NVMe.",
+    "severity": 1
+  },
+  "Offroad_CarUnrecognized": {
+    "text": "커뮤티니 셋팅에서 선택하세요.",
+    "severity": 0
+  },
+  "Offroad_NoFirmware": {
+    "text": "커뮤티니 셋팅에서 선택하세요.",
+    "severity": 0
+  },
+  "Offroad_Recalibration": {
+    "text": "openpilot detected a change in the device's mounting position. Ensure the device is fully seated in the mount and the mount is firmly secured to the windshield.",
+    "severity": 0
+  }
+}
