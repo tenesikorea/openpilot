@@ -44,7 +44,7 @@ def manager_init() -> None:
     ("OpenpilotEnabledToggle", "1"),
     ("IsMetric", "1"),
 
-    ("TenesiSSHLegacy", "1"),  # SSH 공용키 사용 옵션
+    ("TenesiSSHLegacy", "1"),  # SSH 공용키 사용 옵션 테스트
     ("SshEnabled", "1"),  # SSH 공용키 사용 옵션
 #    ("KeepSteeringTurnSignals", "1"),  # 방향지시등에도 상시조향 작동
     ("HapticFeedbackWhenSpeedCamera", "1"),  # NDA 카메라앞 과속시 허드 계기판 경고
